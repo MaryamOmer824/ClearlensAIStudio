@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClearLens – Brush Blur Studio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ClearLens – Brush Effects Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -11,34 +11,52 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#0a0a0f; color:#f0f0f5; font-family:'Inter',system-ui,sans-serif; overflow-x:hidden; }
+    body { background:#0a0a0f; color:#f0f0f5; font-family:'Inter',system-ui,sans-serif; overflow-x:hidden; -webkit-tap-highlight-color:transparent; }
     .glass-card { background:rgba(255,255,255,0.04); backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.06); border-radius:20px; }
     .gradient-primary { background:linear-gradient(135deg,#6c5ce7,#a29bfe,#fd79a8); background-size:200% 200%; animation:gradientMove 6s ease infinite; }
     @keyframes gradientMove { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
-    .btn-primary { background:linear-gradient(135deg,#6c5ce7,#a29bfe); color:#fff; border:none; padding:12px 28px; border-radius:14px; font-weight:600; cursor:pointer; transition:all 0.3s ease; box-shadow:0 4px 20px rgba(108,92,231,0.35); }
+    .btn-primary { background:linear-gradient(135deg,#6c5ce7,#a29bfe); color:#fff; border:none; padding:10px 22px; border-radius:14px; font-weight:600; font-size:14px; cursor:pointer; transition:all 0.3s ease; box-shadow:0 4px 20px rgba(108,92,231,0.35); }
     .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(108,92,231,0.5); }
-    .btn-secondary { background:rgba(255,255,255,0.06); color:#f0f0f5; border:1px solid rgba(255,255,255,0.1); padding:12px 28px; border-radius:14px; font-weight:500; cursor:pointer; transition:all 0.3s ease; }
+    .btn-primary:active { transform:scale(0.97); }
+    .btn-secondary { background:rgba(255,255,255,0.06); color:#f0f0f5; border:1px solid rgba(255,255,255,0.1); padding:10px 22px; border-radius:14px; font-weight:500; font-size:14px; cursor:pointer; transition:all 0.3s ease; }
     .btn-secondary:hover { background:rgba(255,255,255,0.12); }
-    .drop-zone { border:2px dashed rgba(108,92,231,0.4); border-radius:24px; background:rgba(108,92,231,0.04); transition:all 0.4s ease; min-height:300px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; }
+    .btn-draw { background:rgba(108,92,231,0.2); border:2px solid #6c5ce7; color:#fff; padding:8px 18px; border-radius:14px; font-weight:600; font-size:13px; cursor:pointer; transition:all 0.3s ease; display:flex; align-items:center; gap:8px; }
+    .btn-draw.active { background:#6c5ce7; box-shadow:0 0 30px rgba(108,92,231,0.4); }
+    .btn-draw:active { transform:scale(0.95); }
+    .drop-zone { border:2px dashed rgba(108,92,231,0.4); border-radius:24px; background:rgba(108,92,231,0.04); transition:all 0.4s ease; min-height:280px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; }
     .drop-zone:hover, .drop-zone.dragover { border-color:#6c5ce7; background:rgba(108,92,231,0.1); transform:scale(1.01); }
-    .blur-type-chip { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:8px 16px; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.25s ease; color:#b0b0c0; white-space:nowrap; }
+    .blur-type-chip { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:6px 14px; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.25s ease; color:#b0b0c0; white-space:nowrap; display:inline-flex; align-items:center; gap:4px; }
     .blur-type-chip:hover { background:rgba(108,92,231,0.15); border-color:rgba(108,92,231,0.3); color:#fff; }
     .blur-type-chip.active { background:rgba(108,92,231,0.25); border-color:#6c5ce7; color:#fff; box-shadow:0 0 20px rgba(108,92,231,0.15); }
     .slider-thumb::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg,#6c5ce7,#a29bfe); cursor:pointer; box-shadow:0 2px 12px rgba(108,92,231,0.5); }
     .slider-thumb::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg,#6c5ce7,#a29bfe); cursor:pointer; border:none; }
-    .canvas-wrapper { background:#0e0e16; border-radius:20px; border:1px solid rgba(255,255,255,0.06); overflow:hidden; position:relative; min-height:400px; display:flex; align-items:center; justify-content:center; cursor:crosshair; }
-    .canvas-wrapper canvas { max-width:100%; max-height:70vh; object-fit:contain; display:block; touch-action:none; }
-    .tool-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); cursor:pointer; transition:all 0.25s ease; color:#a0a0b8; font-size:16px; }
+    .canvas-wrapper { background:#0e0e16; border-radius:20px; border:1px solid rgba(255,255,255,0.06); overflow:hidden; position:relative; min-height:350px; display:flex; align-items:center; justify-content:center; touch-action:auto; }
+    .canvas-wrapper canvas { max-width:100%; max-height:70vh; object-fit:contain; display:block; touch-action:auto; }
+    .canvas-wrapper.drawing canvas { touch-action:none; cursor:crosshair; }
+    .canvas-wrapper.drawing { cursor:crosshair; }
+    .tool-icon { width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); cursor:pointer; transition:all 0.25s ease; color:#a0a0b8; font-size:15px; }
     .tool-icon:hover { background:rgba(108,92,231,0.15); border-color:rgba(108,92,231,0.3); color:#fff; }
-    .upload-option { padding:20px; border-radius:16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); cursor:pointer; transition:all 0.3s ease; text-align:center; }
+    .upload-option { padding:16px; border-radius:16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); cursor:pointer; transition:all 0.3s ease; text-align:center; }
     .upload-option:hover { background:rgba(108,92,231,0.08); border-color:rgba(108,92,231,0.2); transform:translateY(-2px); }
     .fade-in { animation:fadeIn 0.5s ease forwards; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
     .hero-bg { background:radial-gradient(ellipse at 20% 50%, rgba(108,92,231,0.12) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(253,121,168,0.08) 0%, transparent 60%), #0a0a0f; }
-    .sidebar { max-height: calc(100vh - 200px); overflow-y: auto; }
-    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar { max-height: calc(100vh - 180px); overflow-y:auto; }
+    .sidebar::-webkit-scrollbar { width:4px; }
     .sidebar::-webkit-scrollbar-track { background:transparent; }
     .sidebar::-webkit-scrollbar-thumb { background:#6c5ce7; border-radius:10px; }
+    .effect-preview { display:flex; flex-wrap:wrap; gap:6px; }
+    .effect-preview .chip { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:4px 12px; font-size:11px; color:#888; cursor:pointer; transition:all 0.2s; }
+    .effect-preview .chip.active { background:rgba(108,92,231,0.2); border-color:#6c5ce7; color:#fff; }
+    .effect-preview .chip:active { transform:scale(0.95); }
+    .header-title { font-size:clamp(1rem, 3vw, 1.4rem); }
+    .header-sub { font-size:clamp(0.5rem, 1.2vw, 0.65rem); }
+    @media (max-width:640px) {
+      .grid-edit { grid-template-columns:1fr !important; }
+      .sidebar { max-height:280px; }
+      .blur-type-chip { font-size:11px; padding:4px 10px; }
+      .btn-draw { font-size:12px; padding:6px 14px; }
+    }
   </style>
 </head>
 <body>
@@ -47,9 +65,9 @@
 <script type="text/babel">
 const { useState, useRef, useEffect, useCallback } = React;
 
-// ============================================================
+// ========================================================================
 //  REGION HELPERS
-// ============================================================
+// ========================================================================
 function getRegion(imageData, w, h, x0, y0, x1, y1) {
   const rw = x1 - x0, rh = y1 - y0;
   if (rw <= 0 || rh <= 0) return null;
@@ -66,7 +84,6 @@ function getRegion(imageData, w, h, x0, y0, x1, y1) {
   }
   return { data, width: rw, height: rh };
 }
-
 function putRegion(imageData, w, h, region, x0, y0) {
   const { data, width: rw, height: rh } = region;
   for (let dy = 0; dy < rh; dy++) {
@@ -81,675 +98,714 @@ function putRegion(imageData, w, h, region, x0, y0) {
   }
 }
 
-// ============================================================
-//  EFFECT: GAUSSIAN BLUR (2-pass separable)
-// ============================================================
+// ========================================================================
+//  GAUSSIAN BLUR (2-pass separable)
+// ========================================================================
 function applyGaussianRegion(region, radius) {
   const { data, width, height } = region;
+  if (radius < 1) return;
   const temp = new Uint8ClampedArray(data);
-  // Horizontal
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       let r=0,g=0,b=0,a=0,count=0;
-      for (let dx = -radius; dx <= radius; dx++) {
+      for (let dx=-radius; dx<=radius; dx++) {
         const px = Math.min(width-1, Math.max(0, x+dx));
         const idx = (y*width + px)*4;
         r += temp[idx]; g += temp[idx+1]; b += temp[idx+2]; a += temp[idx+3];
         count++;
       }
       const idx = (y*width + x)*4;
-      data[idx] = r/count; data[idx+1] = g/count; data[idx+2] = b/count; data[idx+3] = a/count;
+      data[idx]=r/count; data[idx+1]=g/count; data[idx+2]=b/count; data[idx+3]=a/count;
     }
   }
-  // Vertical
   const temp2 = new Uint8ClampedArray(data);
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       let r=0,g=0,b=0,a=0,count=0;
-      for (let dy = -radius; dy <= radius; dy++) {
+      for (let dy=-radius; dy<=radius; dy++) {
         const py = Math.min(height-1, Math.max(0, y+dy));
         const idx = (py*width + x)*4;
         r += temp2[idx]; g += temp2[idx+1]; b += temp2[idx+2]; a += temp2[idx+3];
         count++;
       }
       const idx = (y*width + x)*4;
-      data[idx] = r/count; data[idx+1] = g/count; data[idx+2] = b/count; data[idx+3] = a/count;
+      data[idx]=r/count; data[idx+1]=g/count; data[idx+2]=b/count; data[idx+3]=a/count;
     }
   }
 }
 
-// ============================================================
-//  EFFECT: RAIN DROPS
-// ============================================================
+// ========================================================================
+//  EFFECT: REAL WOOD GRAIN
+// ========================================================================
+function applyWoodRegion(region, strength, density) {
+  const { data, width, height } = region;
+  const str = strength/100, dens = density/100;
+  const temp = new Uint8ClampedArray(data);
+  const baseR=180, baseG=110, baseB=55;
+
+  // Color mapping
+  for (let y=0; y<height; y++) {
+    for (let x=0; x<width; x++) {
+      const idx=(y*width+x)*4;
+      // Multiple grain layers
+      const g1 = Math.sin(x*0.06 + y*0.018 + 1.3)*0.5+0.5;
+      const g2 = Math.cos(x*0.04 - y*0.025 + 2.7)*0.5+0.5;
+      const g3 = Math.sin(x*0.09 + y*0.035 + 0.7)*0.5+0.5;
+      const g4 = Math.sin(x*0.12 - y*0.04 + 4.1)*0.5+0.5;
+      const mix = (g1*0.4 + g2*0.25 + g3*0.2 + g4*0.15) * str * 0.6 * dens;
+      const wr = baseR + mix*70 + (Math.random()-0.5)*12*str;
+      const wg = baseG + mix*45 + (Math.random()-0.5)*8*str;
+      const wb = baseB + mix*30 + (Math.random()-0.5)*6*str;
+      const blend = 0.15 + str*0.65;
+      data[idx] = Math.min(255, temp[idx]*(1-blend) + wr*blend);
+      data[idx+1] = Math.min(255, temp[idx+1]*(1-blend) + wg*blend);
+      data[idx+2] = Math.min(255, temp[idx+2]*(1-blend) + wb*blend);
+    }
+  }
+
+  // Grain lines
+  const numLines = Math.floor(5 + dens*14);
+  for (let l=0; l<numLines; l++) {
+    const sx = Math.random()*width, sy = Math.random()*height;
+    const len = 15 + Math.random()*40*dens;
+    const ang = (Math.random()-0.5)*0.7;
+    const amp = 3 + Math.random()*8*dens;
+    for (let t=0; t<len; t++) {
+      const f=t/len;
+      const x=Math.floor(sx + t*1.8);
+      const y=Math.floor(sy + Math.sin(f*3+1.2)*amp + f*18*ang);
+      if (x<0||x>=width||y<0||y>=height) continue;
+      const idx=(y*width+x)*4;
+      const dark=50*str*(0.5+0.5*Math.sin(f*4+0.7));
+      data[idx]=Math.max(0, data[idx]-dark);
+      data[idx+1]=Math.max(0, data[idx+1]-dark*0.8);
+      data[idx+2]=Math.max(0, data[idx+2]-dark*0.6);
+      // Highlight on grain edge
+      if (Math.random()>0.7) {
+        const h=20*str*(0.5+0.5*Math.sin(f*6+2.1));
+        data[idx]=Math.min(255, data[idx]+h);
+        data[idx+1]=Math.min(255, data[idx+1]+h*0.6);
+      }
+    }
+  }
+
+  // Knots
+  const numKnots = Math.floor(1 + dens*6);
+  for (let k=0; k<numKnots; k++) {
+    const cx=Math.random()*width, cy=Math.random()*height;
+    const rad=4+Math.random()*10*dens;
+    for (let y=Math.max(0,Math.floor(cy-rad)); y<Math.min(height,Math.ceil(cy+rad)); y++) {
+      for (let x=Math.max(0,Math.floor(cx-rad)); x<Math.min(width,Math.ceil(cx+rad)); x++) {
+        const dx=x-cx, dy=y-cy, dist=Math.sqrt(dx*dx+dy*dy);
+        if (dist>rad) continue;
+        const idx=(y*width+x)*4;
+        const dark=55*str*(1-dist/rad);
+        data[idx]=Math.max(0, data[idx]-dark);
+        data[idx+1]=Math.max(0, data[idx+1]-dark*0.7);
+        data[idx+2]=Math.max(0, data[idx+2]-dark*0.4);
+        if (dist>rad*0.55 && dist<rad*0.8) {
+          const ring=35*str;
+          data[idx]=Math.min(255, data[idx]+ring);
+          data[idx+1]=Math.min(255, data[idx+1]+ring*0.5);
+          data[idx+2]=Math.min(255, data[idx+2]+ring*0.3);
+        }
+      }
+    }
+  }
+}
+
+// ========================================================================
+//  EFFECT: REAL WATER DROPLETS (Rain on mirror)
+// ========================================================================
 function applyRainDropsRegion(region, strength, density) {
   const { data, width, height } = region;
-  const str = strength / 100;
-  const dens = Math.max(0.3, density / 100);
-  const temp = new Uint8ClampedArray(data);
-  const numDrops = Math.floor(3 + dens * 12);
+  const str=strength/100, dens=Math.max(0.3,density/100);
+  const temp=new Uint8ClampedArray(data);
+  const numDrops=Math.floor(4 + dens*14);
 
-  // Blur background under drops
-  const blurR = Math.max(1, Math.floor(str * 4));
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
+  // Blur background
+  const blurR=Math.max(1, Math.floor(str*4));
+  for (let y=0; y<height; y++) {
+    for (let x=0; x<width; x++) {
       let r=0,g=0,b=0,count=0;
       for (let dy=-blurR; dy<=blurR; dy++) {
         for (let dx=-blurR; dx<=blurR; dx++) {
-          const px = Math.min(width-1, Math.max(0, x+dx));
-          const py = Math.min(height-1, Math.max(0, y+dy));
-          const idx = (py*width + px)*4;
-          r += temp[idx]; g += temp[idx+1]; b += temp[idx+2];
-          count++;
+          const px=Math.min(width-1,Math.max(0,x+dx));
+          const py=Math.min(height-1,Math.max(0,y+dy));
+          const idx=(py*width+px)*4;
+          r+=temp[idx]; g+=temp[idx+1]; b+=temp[idx+2]; count++;
         }
       }
-      const idx = (y*width + x)*4;
-      const mix = 0.3 + str * 0.5;
-      data[idx] = data[idx] * (1 - mix) + (r/count) * mix;
-      data[idx+1] = data[idx+1] * (1 - mix) + (g/count) * mix;
-      data[idx+2] = data[idx+2] * (1 - mix) + (b/count) * mix;
+      const idx=(y*width+x)*4;
+      const mix=0.25+str*0.55;
+      data[idx]=data[idx]*(1-mix)+(r/count)*mix;
+      data[idx+1]=data[idx+1]*(1-mix)+(g/count)*mix;
+      data[idx+2]=data[idx+2]*(1-mix)+(b/count)*mix;
     }
   }
 
   // Draw droplets
-  for (let d = 0; d < numDrops; d++) {
-    const cx = Math.random() * width;
-    const cy = Math.random() * height;
-    const radius = 4 + Math.random() * 12 * dens;
-    const r2 = radius * radius;
-
-    for (let y = Math.max(0, Math.floor(cy - radius - 2)); y < Math.min(height, Math.ceil(cy + radius + 2)); y++) {
-      for (let x = Math.max(0, Math.floor(cx - radius - 2)); x < Math.min(width, Math.ceil(cx + radius + 2)); x++) {
-        const dx = x - cx, dy = y - cy;
-        const dist2 = dx*dx + dy*dy;
-        if (dist2 > r2 + 4) continue;
-        const dist = Math.sqrt(dist2);
-        const idx = (y*width + x)*4;
-
-        if (dist < radius) {
-          const factor = 1 + 0.08 * str;
-          const sx = Math.min(width-1, Math.max(0, Math.floor(cx + dx * factor)));
-          const sy = Math.min(height-1, Math.max(0, Math.floor(cy + dy * factor)));
-          const sidx = (sy*width + sx)*4;
-          const blend = 0.6 + 0.4 * (1 - dist/radius);
-          data[idx] = data[idx] * (1 - blend) + temp[sidx] * blend;
-          data[idx+1] = data[idx+1] * (1 - blend) + temp[sidx+1] * blend;
-          data[idx+2] = data[idx+2] * (1 - blend) + temp[sidx+2] * blend;
+  for (let d=0; d<numDrops; d++) {
+    const cx=Math.random()*width, cy=Math.random()*height;
+    const rad=4+Math.random()*14*dens;
+    for (let y=Math.max(0,Math.floor(cy-rad-2)); y<Math.min(height,Math.ceil(cy+rad+2)); y++) {
+      for (let x=Math.max(0,Math.floor(cx-rad-2)); x<Math.min(width,Math.ceil(cx+rad+2)); x++) {
+        const dx=x-cx, dy=y-cy, dist=Math.sqrt(dx*dx+dy*dy);
+        if (dist>rad+2) continue;
+        const idx=(y*width+x)*4;
+        if (dist<rad) {
+          const factor=1+0.09*str;
+          const sx=Math.min(width-1,Math.max(0,Math.floor(cx+dx*factor)));
+          const sy=Math.min(height-1,Math.max(0,Math.floor(cy+dy*factor)));
+          const sidx=(sy*width+sx)*4;
+          const blend=0.55+0.45*(1-dist/rad);
+          data[idx]=data[idx]*(1-blend)+temp[sidx]*blend;
+          data[idx+1]=data[idx+1]*(1-blend)+temp[sidx+1]*blend;
+          data[idx+2]=data[idx+2]*(1-blend)+temp[sidx+2]*blend;
+          // Blue tint inside drop
+          const tint=15*str*(1-dist/rad);
+          data[idx]=Math.min(255, data[idx]+tint*0.3);
+          data[idx+2]=Math.min(255, data[idx+2]+tint*0.7);
         }
-
-        if (dist > radius - 1 && dist < radius + 2) {
-          const shadow = (dist - radius + 1) * 60 * str;
-          const angle = Math.atan2(dy, dx);
-          if (angle > 0.3 && angle < 2.8) {
-            data[idx] = Math.max(0, data[idx] - shadow);
-            data[idx+1] = Math.max(0, data[idx+1] - shadow);
-            data[idx+2] = Math.max(0, data[idx+2] - shadow);
+        // Shadow bottom
+        if (dist>rad-0.8 && dist<rad+1.5) {
+          const shadow=(dist-rad+0.8)*70*str;
+          const ang=Math.atan2(dy,dx);
+          if (ang>0.2 && ang<2.9) {
+            data[idx]=Math.max(0, data[idx]-shadow);
+            data[idx+1]=Math.max(0, data[idx+1]-shadow);
+            data[idx+2]=Math.max(0, data[idx+2]-shadow);
           }
         }
-
-        if (dist > radius * 0.3 && dist < radius * 0.7) {
-          const angle = Math.atan2(dy, dx);
-          if (angle > -1.2 && angle < -0.2) {
-            const highlight = 80 * str * (1 - dist/radius);
-            data[idx] = Math.min(255, data[idx] + highlight);
-            data[idx+1] = Math.min(255, data[idx+1] + highlight * 0.9);
-            data[idx+2] = Math.min(255, data[idx+2] + highlight * 1.1);
+        // Highlight top-left
+        if (dist>rad*0.25 && dist<rad*0.65) {
+          const ang=Math.atan2(dy,dx);
+          if (ang>-1.3 && ang<-0.15) {
+            const hl=90*str*(1-dist/rad);
+            data[idx]=Math.min(255, data[idx]+hl);
+            data[idx+1]=Math.min(255, data[idx+1]+hl*0.85);
+            data[idx+2]=Math.min(255, data[idx+2]+hl*1.1);
           }
         }
-
-        if (dist > radius * 0.1 && dist < radius * 0.3) {
-          const angle = Math.atan2(dy, dx);
-          if (angle > -0.5 && angle < 0.1) {
-            const sparkle = 120 * str * (1 - dist/radius);
-            data[idx] = Math.min(255, data[idx] + sparkle);
-            data[idx+1] = Math.min(255, data[idx+1] + sparkle);
-            data[idx+2] = Math.min(255, data[idx+2] + sparkle);
+        // Sparkle
+        if (dist>rad*0.08 && dist<rad*0.28) {
+          const ang=Math.atan2(dy,dx);
+          if (ang>-0.6 && ang<0.15) {
+            const sp=140*str*(1-dist/rad);
+            data[idx]=Math.min(255, data[idx]+sp);
+            data[idx+1]=Math.min(255, data[idx+1]+sp);
+            data[idx+2]=Math.min(255, data[idx+2]+sp);
           }
         }
       }
     }
   }
 
-  // Streaks
-  for (let d = 0; d < numDrops * 0.5; d++) {
-    const x1 = Math.random() * width, y1 = Math.random() * height;
-    const x2 = Math.min(width-1, Math.max(0, x1 + (Math.random()-0.5) * 40 * dens));
-    const y2 = Math.min(height-1, Math.max(0, y1 + (Math.random()-0.5) * 40 * dens));
-    const steps = Math.floor(5 + 15 * dens);
-    for (let t = 0; t < steps; t++) {
-      const frac = t / steps;
-      const x = Math.floor(x1 + (x2 - x1) * frac);
-      const y = Math.floor(y1 + (y2 - y1) * frac);
-      if (x < 0 || x >= width || y < 0 || y >= height) continue;
-      const idx = (y*width + x)*4;
-      const brightness = 20 * str * (1 - Math.abs(frac - 0.5) * 2);
-      data[idx] = Math.min(255, data[idx] + brightness);
-      data[idx+1] = Math.min(255, data[idx+1] + brightness * 0.8);
-      data[idx+2] = Math.min(255, data[idx+2] + brightness * 1.1);
+  // Streaks between drops
+  for (let d=0; d<numDrops*0.6; d++) {
+    const x1=Math.random()*width, y1=Math.random()*height;
+    const x2=Math.min(width-1,Math.max(0,x1+(Math.random()-0.5)*45*dens));
+    const y2=Math.min(height-1,Math.max(0,y1+(Math.random()-0.5)*45*dens));
+    const steps=Math.floor(6+18*dens);
+    for (let t=0; t<steps; t++) {
+      const f=t/steps;
+      const x=Math.floor(x1+(x2-x1)*f), y=Math.floor(y1+(y2-y1)*f);
+      if (x<0||x>=width||y<0||y>=height) continue;
+      const idx=(y*width+x)*4;
+      const bright=25*str*(1-Math.abs(f-0.5)*2);
+      data[idx]=Math.min(255, data[idx]+bright);
+      data[idx+1]=Math.min(255, data[idx+1]+bright*0.75);
+      data[idx+2]=Math.min(255, data[idx+2]+bright*1.15);
     }
   }
 }
 
-// ============================================================
+// ========================================================================
 //  EFFECT: CRYSTAL / GEMSTONE
-// ============================================================
+// ========================================================================
 function applyCrystalRegion(region, strength, density) {
   const { data, width, height } = region;
-  const str = strength / 100;
-  const dens = density / 100;
-  const temp = new Uint8ClampedArray(data);
+  const str=strength/100, dens=density/100;
+  const temp=new Uint8ClampedArray(data);
 
-  // Prismatic color shift
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const idx = (y*width + x)*4;
-      const dx = x / width - 0.5, dy = y / height - 0.5;
-      const angle = Math.atan2(dy, dx);
-      const dist = Math.sqrt(dx*dx + dy*dy);
-      const hueShift = (Math.sin(angle * 3 + dist * 8 + Date.now()/5000) * 0.5 + 0.5) * str * 0.8;
-
-      const r = temp[idx], g = temp[idx+1], b = temp[idx+2];
-      const nr = r * (1 - str * 0.3) + (r * 0.3 + g * 0.6 + b * 0.1) * str * 0.3;
-      const ng = g * (1 - str * 0.3) + (g * 0.3 + b * 0.6 + r * 0.1) * str * 0.3;
-      const nb = b * (1 - str * 0.3) + (b * 0.3 + r * 0.6 + g * 0.1) * str * 0.3;
-
-      const shiftAmt = (Math.sin(angle * 2 + dist * 4) * 0.5 + 0.5) * str * 40;
-      data[idx] = Math.min(255, Math.max(0, nr + shiftAmt * 0.6));
-      data[idx+1] = Math.min(255, Math.max(0, ng + shiftAmt * 0.3));
-      data[idx+2] = Math.min(255, Math.max(0, nb + shiftAmt * 0.9));
+  // Prismatic refraction
+  for (let y=0; y<height; y++) {
+    for (let x=0; x<width; x++) {
+      const idx=(y*width+x)*4;
+      const dx=x/width-0.5, dy=y/height-0.5;
+      const ang=Math.atan2(dy,dx), dist=Math.sqrt(dx*dx+dy*dy);
+      const hue=(Math.sin(ang*3+dist*6+Date.now()/5000)*0.5+0.5)*str*0.9;
+      const r=temp[idx], g=temp[idx+1], b=temp[idx+2];
+      const nr=r*(1-str*0.35)+(r*0.25+g*0.6+b*0.15)*str*0.35;
+      const ng=g*(1-str*0.35)+(g*0.25+b*0.6+r*0.15)*str*0.35;
+      const nb=b*(1-str*0.35)+(b*0.25+r*0.6+g*0.15)*str*0.35;
+      const shift=(Math.sin(ang*2+dist*5)*0.5+0.5)*str*45;
+      data[idx]=Math.min(255,Math.max(0,nr+shift*0.5));
+      data[idx+1]=Math.min(255,Math.max(0,ng+shift*0.25));
+      data[idx+2]=Math.min(255,Math.max(0,nb+shift*0.85));
     }
   }
 
-  // Faceted highlights
-  const numFacets = Math.floor(3 + dens * 8);
-  for (let f = 0; f < numFacets; f++) {
-    const cx = Math.random() * width;
-    const cy = Math.random() * height;
-    const size = 3 + Math.random() * 12 * dens;
-    const angle = Math.random() * Math.PI * 2;
-    const points = 3 + Math.floor(Math.random() * 3);
-
-    for (let i = 0; i < points; i++) {
-      const a1 = angle + (i / points) * Math.PI * 2;
-      const a2 = angle + ((i+0.5) / points) * Math.PI * 2;
-      const r1 = size * (0.6 + Math.random() * 0.4);
-      const r2 = size * (0.6 + Math.random() * 0.4);
-      const x1 = cx + Math.cos(a1) * r1, y1 = cy + Math.sin(a1) * r1;
-      const x2 = cx + Math.cos(a2) * r2, y2 = cy + Math.sin(a2) * r2;
-
-      const steps = Math.floor(3 + size * 0.5);
-      for (let t = 0; t <= steps; t++) {
-        const frac = t / steps;
-        const x = Math.floor(x1 + (x2 - x1) * frac);
-        const y = Math.floor(y1 + (y2 - y1) * frac);
-        if (x < 0 || x >= width || y < 0 || y >= height) continue;
-        const idx = (y*width + x)*4;
-        const brightness = 60 * str * (1 - Math.abs(frac - 0.5) * 2) * (0.5 + Math.random() * 0.5);
-        const r = data[idx], g = data[idx+1], b = data[idx+2];
-        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-        data[idx] = Math.min(255, r + brightness * (1 + (gray - 128) / 128));
-        data[idx+1] = Math.min(255, g + brightness * (1 + (gray - 128) / 128) * 0.8);
-        data[idx+2] = Math.min(255, b + brightness * (1 + (gray - 128) / 128) * 1.2);
+  // Facets
+  const numFacets=Math.floor(4+dens*10);
+  for (let f=0; f<numFacets; f++) {
+    const cx=Math.random()*width, cy=Math.random()*height;
+    const size=4+Math.random()*14*dens;
+    const ang=Math.random()*Math.PI*2;
+    const pts=3+Math.floor(Math.random()*3);
+    for (let i=0; i<pts; i++) {
+      const a1=ang+(i/pts)*Math.PI*2;
+      const a2=ang+((i+0.5)/pts)*Math.PI*2;
+      const r1=size*(0.5+Math.random()*0.5);
+      const r2=size*(0.5+Math.random()*0.5);
+      const x1=cx+Math.cos(a1)*r1, y1=cy+Math.sin(a1)*r1;
+      const x2=cx+Math.cos(a2)*r2, y2=cy+Math.sin(a2)*r2;
+      const steps=Math.floor(3+size*0.4);
+      for (let t=0; t<=steps; t++) {
+        const f=t/steps;
+        const x=Math.floor(x1+(x2-x1)*f), y=Math.floor(y1+(y2-y1)*f);
+        if (x<0||x>=width||y<0||y>=height) continue;
+        const idx=(y*width+x)*4;
+        const bright=70*str*(1-Math.abs(f-0.5)*2)*(0.4+Math.random()*0.6);
+        const gr=0.299*data[idx]+0.587*data[idx+1]+0.114*data[idx+2];
+        data[idx]=Math.min(255, data[idx]+bright*(1+(gr-128)/128));
+        data[idx+1]=Math.min(255, data[idx+1]+bright*(1+(gr-128)/128)*0.7);
+        data[idx+2]=Math.min(255, data[idx+2]+bright*(1+(gr-128)/128)*1.3);
       }
     }
   }
 
   // Sparkles
-  const numSparks = Math.floor(5 + dens * 15);
-  for (let s = 0; s < numSparks; s++) {
-    const cx = Math.random() * width;
-    const cy = Math.random() * height;
-    const size = 1 + Math.random() * 3 * str;
-    const intensity = 80 + Math.random() * 120 * str;
-    for (let dy = -Math.ceil(size); dy <= Math.ceil(size); dy++) {
-      for (let dx = -Math.ceil(size); dx <= Math.ceil(size); dx++) {
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist > size) continue;
-        const x = Math.floor(cx + dx), y = Math.floor(cy + dy);
-        if (x < 0 || x >= width || y < 0 || y >= height) continue;
-        const idx = (y*width + x)*4;
-        const falloff = 1 - dist / size;
-        const val = intensity * falloff * falloff;
-        data[idx] = Math.min(255, data[idx] + val);
-        data[idx+1] = Math.min(255, data[idx+1] + val * 0.9);
-        data[idx+2] = Math.min(255, data[idx+2] + val * 1.2);
+  const numSparks=Math.floor(6+dens*18);
+  for (let s=0; s<numSparks; s++) {
+    const cx=Math.random()*width, cy=Math.random()*height;
+    const size=1+Math.random()*3.5*str;
+    const inten=90+Math.random()*140*str;
+    for (let dy=-Math.ceil(size); dy<=Math.ceil(size); dy++) {
+      for (let dx=-Math.ceil(size); dx<=Math.ceil(size); dx++) {
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if (dist>size) continue;
+        const x=Math.floor(cx+dx), y=Math.floor(cy+dy);
+        if (x<0||x>=width||y<0||y>=height) continue;
+        const idx=(y*width+x)*4;
+        const fall=1-dist/size;
+        const val=inten*fall*fall;
+        data[idx]=Math.min(255, data[idx]+val);
+        data[idx+1]=Math.min(255, data[idx+1]+val*0.85);
+        data[idx+2]=Math.min(255, data[idx+2]+val*1.25);
       }
     }
   }
 }
 
-// ============================================================
-//  EFFECT: WOOD GRAIN
-// ============================================================
-function applyWoodRegion(region, strength, density) {
-  const { data, width, height } = region;
-  const str = strength / 100;
-  const dens = density / 100;
-  const temp = new Uint8ClampedArray(data);
-
-  const baseR = 160, baseG = 100, baseB = 50;
-
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const idx = (y*width + x)*4;
-      const grain = Math.sin(x * 0.06 + y * 0.02 + 1.3) * 0.5 + 0.5;
-      const grain2 = Math.cos(x * 0.04 - y * 0.03 + 2.7) * 0.5 + 0.5;
-      const grain3 = Math.sin(x * 0.09 + y * 0.04 + 0.7) * 0.5 + 0.5;
-      const mix = (grain * 0.5 + grain2 * 0.3 + grain3 * 0.2) * str * 0.5 * dens;
-
-      const wr = baseR + mix * 60 + (Math.random() - 0.5) * 10 * str;
-      const wg = baseG + mix * 40 + (Math.random() - 0.5) * 8 * str;
-      const wb = baseB + mix * 30 + (Math.random() - 0.5) * 6 * str;
-
-      const blend = 0.2 + str * 0.6;
-      data[idx] = Math.min(255, temp[idx] * (1 - blend) + wr * blend);
-      data[idx+1] = Math.min(255, temp[idx+1] * (1 - blend) + wg * blend);
-      data[idx+2] = Math.min(255, temp[idx+2] * (1 - blend) + wb * blend);
-    }
-  }
-
-  // Grain lines
-  const numLines = Math.floor(4 + dens * 12);
-  for (let l = 0; l < numLines; l++) {
-    const startX = Math.random() * width;
-    const startY = Math.random() * height;
-    const len = 10 + Math.random() * 30 * dens;
-    const angle = (Math.random() - 0.5) * 0.8;
-    const waveAmp = 2 + Math.random() * 6 * dens;
-
-    for (let t = 0; t < len; t++) {
-      const frac = t / len;
-      const x = Math.floor(startX + t * 1.5);
-      const y = Math.floor(startY + Math.sin(frac * 3 + 1.2) * waveAmp + frac * 15 * angle);
-      if (x < 0 || x >= width || y < 0 || y >= height) continue;
-      const idx = (y*width + x)*4;
-      const darkness = 40 * str * (0.5 + 0.5 * Math.sin(frac * 5 + 0.7));
-      data[idx] = Math.max(0, data[idx] - darkness);
-      data[idx+1] = Math.max(0, data[idx+1] - darkness * 0.8);
-      data[idx+2] = Math.max(0, data[idx+2] - darkness * 0.6);
-    }
-  }
-
-  // Knots
-  const numKnots = Math.floor(1 + dens * 5);
-  for (let k = 0; k < numKnots; k++) {
-    const cx = Math.random() * width;
-    const cy = Math.random() * height;
-    const radius = 3 + Math.random() * 8 * dens;
-    const r2 = radius * radius;
-    for (let y = Math.max(0, Math.floor(cy - radius)); y < Math.min(height, Math.ceil(cy + radius)); y++) {
-      for (let x = Math.max(0, Math.floor(cx - radius)); x < Math.min(width, Math.ceil(cx + radius)); x++) {
-        const dx = x - cx, dy = y - cy;
-        const dist2 = dx*dx + dy*dy;
-        if (dist2 > r2) continue;
-        const dist = Math.sqrt(dist2);
-        const idx = (y*width + x)*4;
-        const dark = 50 * str * (1 - dist/radius);
-        data[idx] = Math.max(0, data[idx] - dark);
-        data[idx+1] = Math.max(0, data[idx+1] - dark * 0.7);
-        data[idx+2] = Math.max(0, data[idx+2] - dark * 0.4);
-        if (dist > radius * 0.6 && dist < radius * 0.8) {
-          const ring = 30 * str;
-          data[idx] = Math.min(255, data[idx] + ring);
-          data[idx+1] = Math.min(255, data[idx+1] + ring * 0.6);
-          data[idx+2] = Math.min(255, data[idx+2] + ring * 0.3);
-        }
-      }
-    }
-  }
-}
-
-// ============================================================
-//  EFFECT: BROKEN MIRROR
-// ============================================================
+// ========================================================================
+//  EFFECT: BROKEN MIRROR (Shattered glass)
+// ========================================================================
 function applyBrokenMirrorRegion(region, strength, density) {
   const { data, width, height } = region;
-  const str = strength / 100;
-  const dens = density / 100;
-  const temp = new Uint8ClampedArray(data);
+  const str=strength/100, dens=density/100;
+  const temp=new Uint8ClampedArray(data);
+  const cracks=[];
 
-  const crackLines = [];
-  const impacts = [];
-  const numImpacts = Math.floor(1 + dens * 3);
-  for (let i = 0; i < numImpacts; i++) {
-    impacts.push({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      numLines: Math.floor(4 + Math.random() * 6)
-    });
+  // Impact points
+  const impacts=[];
+  const numImpacts=Math.floor(1+dens*4);
+  for (let i=0; i<numImpacts; i++) {
+    impacts.push({ x:Math.random()*width, y:Math.random()*height, numLines:Math.floor(4+Math.random()*7) });
   }
 
-  for (const impact of impacts) {
-    const { x: cx, y: cy } = impact;
-    const numLines = impact.numLines + Math.floor(dens * 4);
-    for (let l = 0; l < numLines; l++) {
-      const angle = Math.random() * Math.PI * 2;
-      const len = 5 + Math.random() * 25 * dens * (0.5 + Math.random() * 0.5);
-      const segments = Math.floor(3 + Math.random() * 5);
-      let prevX = cx, prevY = cy;
-      for (let s = 0; s < segments; s++) {
-        const segLen = len / segments * (0.5 + Math.random() * 0.5);
-        const segAngle = angle + (Math.random() - 0.5) * 0.8;
-        const nx = prevX + Math.cos(segAngle) * segLen;
-        const ny = prevY + Math.sin(segAngle) * segLen;
-        crackLines.push({
-          x1: Math.min(width-1, Math.max(0, prevX)),
-          y1: Math.min(height-1, Math.max(0, prevY)),
-          x2: Math.min(width-1, Math.max(0, nx)),
-          y2: Math.min(height-1, Math.max(0, ny)),
-          width: 0.5 + Math.random() * 1.5 * str,
-          branch: Math.random() > 0.6
+  // Generate cracks
+  for (const imp of impacts) {
+    const {x:cx,y:cy} = imp;
+    const numLines = imp.numLines + Math.floor(dens*5);
+    for (let l=0; l<numLines; l++) {
+      const ang=Math.random()*Math.PI*2;
+      const len=6+Math.random()*30*dens*(0.4+Math.random()*0.6);
+      const segs=Math.floor(3+Math.random()*6);
+      let px=cx, py=cy;
+      for (let s=0; s<segs; s++) {
+        const slen=len/segs*(0.4+Math.random()*0.6);
+        const sang=ang+(Math.random()-0.5)*0.9;
+        const nx=px+Math.cos(sang)*slen;
+        const ny=py+Math.sin(sang)*slen;
+        cracks.push({
+          x1:Math.min(width-1,Math.max(0,px)), y1:Math.min(height-1,Math.max(0,py)),
+          x2:Math.min(width-1,Math.max(0,nx)), y2:Math.min(height-1,Math.max(0,ny)),
+          w:0.5+Math.random()*1.8*str
         });
-        if (Math.random() > 0.5 && s > 0) {
-          const bAngle = segAngle + (Math.random() - 0.5) * 1.2;
-          const bLen = segLen * 0.3;
-          crackLines.push({
-            x1: prevX + Math.cos(segAngle) * segLen * 0.5,
-            y1: prevY + Math.sin(segAngle) * segLen * 0.5,
-            x2: prevX + Math.cos(segAngle) * segLen * 0.5 + Math.cos(bAngle) * bLen,
-            y2: prevY + Math.sin(segAngle) * segLen * 0.5 + Math.sin(bAngle) * bLen,
-            width: 0.3 + Math.random() * 0.8 * str,
-            branch: false
+        if (Math.random()>0.55 && s>0) {
+          const bang=sang+(Math.random()-0.5)*1.3;
+          const blen=slen*0.3;
+          cracks.push({
+            x1:px+Math.cos(sang)*slen*0.5, y1:py+Math.sin(sang)*slen*0.5,
+            x2:px+Math.cos(sang)*slen*0.5+Math.cos(bang)*blen,
+            y2:py+Math.sin(sang)*slen*0.5+Math.sin(bang)*blen,
+            w:0.3+Math.random()*1*str
           });
         }
-        prevX = nx; prevY = ny;
+        px=nx; py=ny;
       }
     }
   }
 
-  for (const line of crackLines) {
-    const { x1, y1, x2, y2, width: lineWidth } = line;
-    const dx = x2 - x1, dy = y2 - y1;
-    const len = Math.sqrt(dx*dx + dy*dy);
-    if (len < 1) continue;
-    const steps = Math.max(2, Math.floor(len * 1.5));
-
-    for (let t = 0; t <= steps; t++) {
-      const frac = t / steps;
-      const x = Math.floor(x1 + dx * frac);
-      const y = Math.floor(y1 + dy * frac);
-      if (x < 0 || x >= width || y < 0 || y >= height) continue;
-      const idx = (y*width + x)*4;
-
-      const dark = 50 * str * lineWidth;
-      data[idx] = Math.max(0, data[idx] - dark);
-      data[idx+1] = Math.max(0, data[idx+1] - dark * 0.9);
-      data[idx+2] = Math.max(0, data[idx+2] - dark * 0.8);
-
-      const highlight = 80 * str * lineWidth * (0.5 + 0.5 * Math.sin(frac * 7 + 1.2));
-      const perpX = -dy / len, perpY = dx / len;
-      for (let side = -1; side <= 1; side += 2) {
-        for (let w = 1; w <= Math.ceil(lineWidth); w++) {
-          const px = Math.floor(x + perpX * w * side * 0.5);
-          const py = Math.floor(y + perpY * w * side * 0.5);
-          if (px < 0 || px >= width || py < 0 || py >= height) continue;
-          const pidx = (py*width + px)*4;
-          const hVal = highlight * (1 - (w-1) / (lineWidth + 1));
-          data[pidx] = Math.min(255, data[pidx] + hVal * 0.6);
-          data[pidx+1] = Math.min(255, data[pidx+1] + hVal * 0.7);
-          data[pidx+2] = Math.min(255, data[pidx+2] + hVal * 0.9);
+  // Draw cracks
+  for (const line of cracks) {
+    const {x1,y1,x2,y2,w:lw}=line;
+    const dx=x2-x1, dy=y2-y1;
+    const len=Math.sqrt(dx*dx+dy*dy);
+    if (len<1) continue;
+    const steps=Math.max(2, Math.floor(len*1.6));
+    for (let t=0; t<=steps; t++) {
+      const f=t/steps;
+      const x=Math.floor(x1+dx*f), y=Math.floor(y1+dy*f);
+      if (x<0||x>=width||y<0||y>=height) continue;
+      const idx=(y*width+x)*4;
+      const dark=55*str*lw;
+      data[idx]=Math.max(0, data[idx]-dark);
+      data[idx+1]=Math.max(0, data[idx+1]-dark*0.9);
+      data[idx+2]=Math.max(0, data[idx+2]-dark*0.8);
+      const hl=90*str*lw*(0.4+0.6*Math.sin(f*6+1.2));
+      const perpX=-dy/len, perpY=dx/len;
+      for (let side=-1; side<=1; side+=2) {
+        for (let w=1; w<=Math.ceil(lw); w++) {
+          const px=Math.floor(x+perpX*w*side*0.4);
+          const py=Math.floor(y+perpY*w*side*0.4);
+          if (px<0||px>=width||py<0||py>=height) continue;
+          const pidx=(py*width+px)*4;
+          const hv=hl*(1-(w-1)/(lw+1));
+          data[pidx]=Math.min(255, data[pidx]+hv*0.5);
+          data[pidx+1]=Math.min(255, data[pidx+1]+hv*0.6);
+          data[pidx+2]=Math.min(255, data[pidx+2]+hv*0.8);
         }
       }
-
-      if (lineWidth > 0.5 && Math.random() > 0.7) {
-        const offset = Math.floor((Math.random() - 0.5) * 4 * str);
-        const px = Math.min(width-1, Math.max(0, x + offset));
-        const py = Math.min(height-1, Math.max(0, y + offset));
-        const sidx = (py*width + px)*4;
-        if (Math.random() > 0.5) {
-          data[idx] = temp[sidx];
-          data[idx+1] = temp[sidx+1];
-          data[idx+2] = temp[sidx+2];
+      // Glitch displacement
+      if (lw>0.4 && Math.random()>0.75) {
+        const off=Math.floor((Math.random()-0.5)*5*str);
+        const px=Math.min(width-1,Math.max(0,x+off));
+        const py=Math.min(height-1,Math.max(0,y+off));
+        const sidx=(py*width+px)*4;
+        if (Math.random()>0.5) {
+          data[idx]=temp[sidx]; data[idx+1]=temp[sidx+1]; data[idx+2]=temp[sidx+2];
         }
       }
     }
   }
 
   // Shard reflections
-  const numShards = Math.floor(2 + dens * 6);
-  for (let s = 0; s < numShards; s++) {
-    const cx = Math.random() * width;
-    const cy = Math.random() * height;
-    const size = 3 + Math.random() * 10 * dens;
-    const angle = Math.random() * Math.PI * 2;
-    const points = 3 + Math.floor(Math.random() * 3);
-
-    for (let i = 0; i < points; i++) {
-      const a1 = angle + (i / points) * Math.PI * 2;
-      const a2 = angle + ((i+0.5) / points) * Math.PI * 2;
-      const r1 = size * (0.5 + Math.random() * 0.5);
-      const r2 = size * (0.5 + Math.random() * 0.5);
-      const x1 = cx + Math.cos(a1) * r1, y1 = cy + Math.sin(a1) * r1;
-      const x2 = cx + Math.cos(a2) * r2, y2 = cy + Math.sin(a2) * r2;
-
-      const steps = Math.floor(2 + size * 0.3);
-      for (let t = 0; t <= steps; t++) {
-        const frac = t / steps;
-        const x = Math.floor(x1 + (x2 - x1) * frac);
-        const y = Math.floor(y1 + (y2 - y1) * frac);
-        if (x < 0 || x >= width || y < 0 || y >= height) continue;
-        const idx = (y*width + x)*4;
-        const bright = 60 * str * (1 - Math.abs(frac - 0.5) * 2) * (0.5 + Math.random() * 0.5);
-        data[idx] = Math.min(255, data[idx] + bright * 0.7);
-        data[idx+1] = Math.min(255, data[idx+1] + bright * 0.8);
-        data[idx+2] = Math.min(255, data[idx+2] + bright);
+  const numShards=Math.floor(3+dens*8);
+  for (let s=0; s<numShards; s++) {
+    const cx=Math.random()*width, cy=Math.random()*height;
+    const size=4+Math.random()*12*dens;
+    const ang=Math.random()*Math.PI*2;
+    const pts=3+Math.floor(Math.random()*3);
+    for (let i=0; i<pts; i++) {
+      const a1=ang+(i/pts)*Math.PI*2;
+      const a2=ang+((i+0.5)/pts)*Math.PI*2;
+      const r1=size*(0.4+Math.random()*0.6);
+      const r2=size*(0.4+Math.random()*0.6);
+      const x1=cx+Math.cos(a1)*r1, y1=cy+Math.sin(a1)*r1;
+      const x2=cx+Math.cos(a2)*r2, y2=cy+Math.sin(a2)*r2;
+      const steps=Math.floor(2+size*0.3);
+      for (let t=0; t<=steps; t++) {
+        const f=t/steps;
+        const x=Math.floor(x1+(x2-x1)*f), y=Math.floor(y1+(y2-y1)*f);
+        if (x<0||x>=width||y<0||y>=height) continue;
+        const idx=(y*width+x)*4;
+        const bright=70*str*(1-Math.abs(f-0.5)*2)*(0.4+Math.random()*0.6);
+        data[idx]=Math.min(255, data[idx]+bright*0.6);
+        data[idx+1]=Math.min(255, data[idx+1]+bright*0.7);
+        data[idx+2]=Math.min(255, data[idx+2]+bright*0.95);
       }
     }
   }
 }
 
-// ============================================================
-//  EFFECT DISPATCHER
-// ============================================================
-function applyEffectToRegion(region, type, strength, density) {
-  switch(type) {
-    case 'gaussian':
-      applyGaussianRegion(region, Math.max(1, Math.floor(strength/12)));
-      break;
-    case 'water_ripple':
-      applyRainDropsRegion(region, strength, density);
-      break;
-    case 'crystal':
-      applyCrystalRegion(region, strength, density);
-      break;
-    case 'wood_scratch':
-      applyWoodRegion(region, strength, density);
-      break;
-    case 'broken_mirror':
-      applyBrokenMirrorRegion(region, strength, density);
-      break;
-    case 'mosaic':
-      {
-        applyGaussianRegion(region, Math.max(1, Math.floor(strength/15)));
-        const { data, width, height } = region;
-        const size = Math.max(3, Math.floor(strength/7));
-        for (let y=0; y<height; y+=size) {
-          for (let x=0; x<width; x+=size) {
-            let r=0,g=0,b=0,a=0,count=0;
-            for (let dy=0; dy<size && y+dy<height; dy++) {
-              for (let dx=0; dx<size && x+dx<width; dx++) {
-                const idx = ((y+dy)*width + (x+dx))*4;
-                r += data[idx]; g += data[idx+1]; b += data[idx+2]; a += data[idx+3];
-                count++;
-              }
-            }
-            r/=count; g/=count; b/=count; a/=count;
-            for (let dy=0; dy<size && y+dy<height; dy++) {
-              for (let dx=0; dx<size && x+dx<width; dx++) {
-                const idx = ((y+dy)*width + (x+dx))*4;
-                data[idx] = r; data[idx+1] = g; data[idx+2] = b; data[idx+3] = a;
-              }
-            }
-          }
+// ========================================================================
+//  EFFECT: FOG (realistic mist)
+// ========================================================================
+function applyFogRegion(region, strength, density) {
+  const { data, width, height } = region;
+  const str=strength/100, dens=density/100;
+  const temp=new Uint8ClampedArray(data);
+
+  // Apply gaussian blur first
+  const blurR=Math.max(1, Math.floor(str*4));
+  for (let y=0; y<height; y++) {
+    for (let x=0; x<width; x++) {
+      let r=0,g=0,b=0,count=0;
+      for (let dy=-blurR; dy<=blurR; dy++) {
+        for (let dx=-blurR; dx<=blurR; dx++) {
+          const px=Math.min(width-1,Math.max(0,x+dx));
+          const py=Math.min(height-1,Math.max(0,y+dy));
+          const idx=(py*width+px)*4;
+          r+=temp[idx]; g+=temp[idx+1]; b+=temp[idx+2];
+          count++;
         }
       }
-      break;
-    case 'bokeh':
-      {
-        const { data, width, height } = region;
-        const radius = Math.max(2, Math.floor(strength/8));
-        const temp = new Uint8ClampedArray(data);
-        for (let y=0; y<height; y++) {
-          for (let x=0; x<width; x++) {
-            let r=0,g=0,b=0,a=0,count=0;
-            for (let dy=-radius; dy<=radius; dy++) {
-              for (let dx=-radius; dx<=radius; dx++) {
-                const dist = Math.sqrt(dx*dx+dy*dy);
-                if (dist > radius) continue;
-                const px = Math.min(width-1, Math.max(0, x+dx));
-                const py = Math.min(height-1, Math.max(0, y+dy));
-                const idx = (py*width + px)*4;
-                const w = 1 - (dist/radius);
-                r += temp[idx]*w; g += temp[idx+1]*w; b += temp[idx+2]*w; a += temp[idx+3]*w;
-                count += w;
-              }
-            }
-            if (count > 0) {
-              const idx = (y*width + x)*4;
-              data[idx] = Math.min(255, r/count + 20);
-              data[idx+1] = Math.min(255, g/count + 10);
-              data[idx+2] = Math.min(255, b/count + 30);
-              data[idx+3] = a/count;
-            }
-          }
-        }
-      }
-      break;
-    case 'motion':
-      {
-        const { data, width, height } = region;
-        const radius = Math.max(1, Math.floor(strength/8));
-        const temp = new Uint8ClampedArray(data);
-        for (let y=0; y<height; y++) {
-          for (let x=0; x<width; x++) {
-            let r=0,g=0,b=0,a=0,count=0;
-            for (let dx=-radius; dx<=radius; dx++) {
-              const px = Math.min(width-1, Math.max(0, x+dx));
-              const idx = (y*width + px)*4;
-              r += temp[idx]; g += temp[idx+1]; b += temp[idx+2]; a += temp[idx+3];
-              count++;
-            }
-            const idx = (y*width + x)*4;
-            data[idx] = r/count; data[idx+1] = g/count; data[idx+2] = b/count; data[idx+3] = a/count;
-          }
-        }
-      }
-      break;
-    case 'glow':
-      {
-        const { data, width, height } = region;
-        const radius = Math.max(2, Math.floor(strength/10));
-        const temp = new Uint8ClampedArray(data);
-        for (let y=0; y<height; y++) {
-          for (let x=0; x<width; x++) {
-            let r=0,g=0,b=0,a=0,count=0;
-            for (let dy=-radius; dy<=radius; dy++) {
-              for (let dx=-radius; dx<=radius; dx++) {
-                const dist = Math.sqrt(dx*dx+dy*dy);
-                if (dist > radius) continue;
-                const px = Math.min(width-1, Math.max(0, x+dx));
-                const py = Math.min(height-1, Math.max(0, y+dy));
-                const idx = (py*width + px)*4;
-                const w = 1 - (dist/radius);
-                r += temp[idx]*w; g += temp[idx+1]*w; b += temp[idx+2]*w; a += temp[idx+3]*w;
-                count += w;
-              }
-            }
-            if (count > 0) {
-              const idx = (y*width + x)*4;
-              const br = strength/100;
-              data[idx] = Math.min(255, r/count + 30*br);
-              data[idx+1] = Math.min(255, g/count + 20*br);
-              data[idx+2] = Math.min(255, b/count + 40*br);
-              data[idx+3] = a/count;
-            }
-          }
-        }
-      }
-      break;
-    case 'paint_smudge':
-      {
-        const { data, width, height } = region;
-        const str = strength/100;
-        const temp = new Uint8ClampedArray(data);
-        const radius = Math.max(1, Math.floor(str*4));
-        for (let y=0; y<height; y++) {
-          for (let x=0; x<width; x++) {
-            const dx = Math.floor((Math.random()-0.5)*radius*2);
-            const dy = Math.floor((Math.random()-0.5)*radius*2);
-            const px = Math.min(width-1, Math.max(0, x+dx));
-            const py = Math.min(height-1, Math.max(0, y+dy));
-            const idx = (y*width + x)*4;
-            const sidx = (py*width + px)*4;
-            const mix = 0.3 + str*0.5;
-            data[idx] = temp[idx]*(1-mix) + temp[sidx]*mix;
-            data[idx+1] = temp[idx+1]*(1-mix) + temp[sidx+1]*mix;
-            data[idx+2] = temp[idx+2]*(1-mix) + temp[sidx+2]*mix;
-          }
-        }
-      }
-      break;
-    case 'fog':
-      {
-        const { data, width, height } = region;
-        const str = strength/100;
-        for (let y=0; y<height; y++) {
-          for (let x=0; x<width; x++) {
-            const idx = (y*width + x)*4;
-            const noise = (Math.sin(x*0.05 + y*0.07 + Date.now()/3000)*0.5+0.5)*str*0.5;
-            data[idx] = Math.min(255, data[idx] + noise*50);
-            data[idx+1] = Math.min(255, data[idx+1] + noise*40);
-            data[idx+2] = Math.min(255, data[idx+2] + noise*60);
-          }
-        }
-      }
-      break;
-    case 'smoke':
-      {
-        const { data, width, height } = region;
-        const str = strength/100;
-        for (let y=0; y<height; y++) {
-          for (let x=0; x<width; x++) {
-            const idx = (y*width + x)*4;
-            const noise = (Math.sin(x*0.03 + y*0.05 + Date.now()/2500)*0.5+0.5)*str*0.6;
-            const noise2 = (Math.cos(x*0.04 - y*0.06 + 1.3)*0.5+0.5)*str*0.4;
-            const mix = noise*0.7 + noise2*0.3;
-            data[idx] = Math.min(255, data[idx] + mix*60);
-            data[idx+1] = Math.min(255, data[idx+1] + mix*50);
-            data[idx+2] = Math.min(255, data[idx+2] + mix*70);
-          }
-        }
-      }
-      break;
-    default:
-      applyGaussianRegion(region, Math.max(1, Math.floor(strength/12)));
+      const idx=(y*width+x)*4;
+      data[idx]=r/count; data[idx+1]=g/count; data[idx+2]=b/count;
+    }
+  }
+
+  // Add fog layers with noise
+  const time=Date.now()/3000;
+  for (let y=0; y<height; y++) {
+    for (let x=0; x<width; x++) {
+      const idx=(y*width+x)*4;
+      const n1=Math.sin(x*0.04+y*0.06+time)*0.5+0.5;
+      const n2=Math.cos(x*0.03-y*0.05+time*0.7)*0.5+0.5;
+      const n3=Math.sin(x*0.07+y*0.03+time*1.3)*0.5+0.5;
+      const noise=(n1*0.5+n2*0.3+n3*0.2)*dens*0.8;
+      const fogAmt=0.15+str*0.55 + noise*0.25*str;
+      const r=data[idx], g=data[idx+1], b=data[idx+2];
+      const fogR=220+fogAmt*35, fogG=220+fogAmt*30, fogB=225+fogAmt*30;
+      data[idx]=Math.min(255, r*(1-fogAmt)+fogR*fogAmt);
+      data[idx+1]=Math.min(255, g*(1-fogAmt)+fogG*fogAmt);
+      data[idx+2]=Math.min(255, b*(1-fogAmt)+fogB*fogAmt);
+    }
   }
 }
 
-// ============================================================
-//  BRUSH PAINT
-// ============================================================
-function paintBrushEffect(canvas, x, y, radius, type, strength, density) {
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width, h = canvas.height;
-  const x0 = Math.max(0, Math.floor(x - radius));
-  const y0 = Math.max(0, Math.floor(y - radius));
-  const x1 = Math.min(w, Math.ceil(x + radius));
-  const y1 = Math.min(h, Math.ceil(y + radius));
-  if (x1 <= x0 || y1 <= y0) return;
+// ========================================================================
+//  EFFECT: SMOKE (wispy)
+// ========================================================================
+function applySmokeRegion(region, strength, density) {
+  const { data, width, height } = region;
+  const str=strength/100, dens=density/100;
+  const temp=new Uint8ClampedArray(data);
 
-  const imageData = ctx.getImageData(0, 0, w, h);
-  const region = getRegion(imageData, w, h, x0, y0, x1, y1);
-  if (!region) return;
+  // Soft blur
+  const blurR=Math.max(1, Math.floor(str*3));
+  for (let y=0; y<height; y++) {
+    for (let x=0; x<width; x++) {
+      let r=0,g=0,b=0,count=0;
+      for (let dy=-blurR; dy<=blurR; dy++) {
+        for (let dx=-blurR; dx<=blurR; dx++) {
+          const px=Math.min(width-1,Math.max(0,x+dx));
+          const py=Math.min(height-1,Math.max(0,y+dy));
+          const idx=(py*width+px)*4;
+          r+=temp[idx]; g+=temp[idx+1]; b+=temp[idx+2];
+          count++;
+        }
+      }
+      const idx=(y*width+x)*4;
+      data[idx]=r/count; data[idx+1]=g/count; data[idx+2]=b/count;
+    }
+  }
 
-  applyEffectToRegion(region, type, strength, density);
-  putRegion(imageData, w, h, region, x0, y0);
-  ctx.putImageData(imageData, 0, 0);
+  // Swirling smoke patterns
+  const time=Date.now()/2500;
+  for (let y=0; y<height; y++) {
+    for (let x=0; x<width; x++) {
+      const idx=(y*width+x)*4;
+      const dx=x/width, dy=y/height;
+      const swirl=Math.sin(dx*12+dy*8+time)*0.5+0.5;
+      const swirl2=Math.cos(dx*8-dy*12+time*0.8)*0.5+0.5;
+      const swirl3=Math.sin(dx*16+dy*6+time*1.2)*0.5+0.5;
+      const noise=(swirl*0.4+swirl2*0.35+swirl3*0.25)*dens*0.9;
+      const smokeAmt=0.1+str*0.5 + noise*0.3*str;
+      const r=data[idx], g=data[idx+1], b=data[idx+2];
+      const smokeR=200+smokeAmt*55, smokeG=195+smokeAmt*50, smokeB=205+smokeAmt*50;
+      data[idx]=Math.min(255, r*(1-smokeAmt)+smokeR*smokeAmt);
+      data[idx+1]=Math.min(255, g*(1-smokeAmt)+smokeG*smokeAmt);
+      data[idx+2]=Math.min(255, b*(1-smokeAmt)+smokeB*smokeAmt);
+    }
+  }
+
+  // Wispy tendrils
+  const numTendrils=Math.floor(2+dens*8);
+  for (let t=0; t<numTendrils; t++) {
+    const sx=Math.random()*width, sy=Math.random()*height;
+    const len=20+Math.random()*50*dens;
+    const ang=Math.random()*Math.PI*2;
+    const waveAmp=5+Math.random()*15*dens;
+    for (let i=0; i<len; i++) {
+      const f=i/len;
+      const x=Math.floor(sx+i*1.2*Math.cos(ang)+Math.sin(f*4+1.3)*waveAmp*f*0.5);
+      const y=Math.floor(sy+i*1.2*Math.sin(ang)+Math.cos(f*3+0.7)*waveAmp*f*0.4);
+      if (x<0||x>=width||y<0||y>=height) continue;
+      const idx=(y*width+x)*4;
+      const bright=40*str*(1-f)*(0.5+0.5*Math.sin(f*6+2.1));
+      data[idx]=Math.min(255, data[idx]+bright);
+      data[idx+1]=Math.min(255, data[idx+1]+bright*0.9);
+      data[idx+2]=Math.min(255, data[idx+2]+bright*1.05);
+      // Slight blur along tendril
+      for (let k=-2; k<=2; k++) {
+        const px=Math.min(width-1,Math.max(0,x+k));
+        const py=Math.min(height-1,Math.max(0,y+k));
+        const pidx=(py*width+px)*4;
+        data[pidx]=Math.min(255, data[pidx]+bright*0.3*(1-Math.abs(k)/3));
+      }
+    }
+  }
 }
 
-// ============================================================
+// ========================================================================
+//  EFFECT DISPATCHER
+// ========================================================================
+function applyEffectToRegion(region, type, strength, density) {
+  switch(type) {
+    case 'water_ripple': applyRainDropsRegion(region, strength, density); break;
+    case 'crystal': applyCrystalRegion(region, strength, density); break;
+    case 'wood_scratch': applyWoodRegion(region, strength, density); break;
+    case 'broken_mirror': applyBrokenMirrorRegion(region, strength, density); break;
+    case 'fog': applyFogRegion(region, strength, density); break;
+    case 'smoke': applySmokeRegion(region, strength, density); break;
+    case 'gaussian': applyGaussianRegion(region, Math.max(1, Math.floor(strength/12))); break;
+    case 'mosaic': {
+      applyGaussianRegion(region, Math.max(1, Math.floor(strength/15)));
+      const { data, width, height } = region;
+      const size=Math.max(3, Math.floor(strength/7));
+      for (let y=0; y<height; y+=size) {
+        for (let x=0; x<width; x+=size) {
+          let r=0,g=0,b=0,a=0,count=0;
+          for (let dy=0; dy<size && y+dy<height; dy++) {
+            for (let dx=0; dx<size && x+dx<width; dx++) {
+              const idx=((y+dy)*width+(x+dx))*4;
+              r+=data[idx]; g+=data[idx+1]; b+=data[idx+2]; a+=data[idx+3];
+              count++;
+            }
+          }
+          r/=count; g/=count; b/=count; a/=count;
+          for (let dy=0; dy<size && y+dy<height; dy++) {
+            for (let dx=0; dx<size && x+dx<width; dx++) {
+              const idx=((y+dy)*width+(x+dx))*4;
+              data[idx]=r; data[idx+1]=g; data[idx+2]=b; data[idx+3]=a;
+            }
+          }
+        }
+      }
+      break;
+    }
+    case 'bokeh': {
+      const { data, width, height } = region;
+      const radius=Math.max(2, Math.floor(strength/8));
+      const temp=new Uint8ClampedArray(data);
+      for (let y=0; y<height; y++) {
+        for (let x=0; x<width; x++) {
+          let r=0,g=0,b=0,a=0,count=0;
+          for (let dy=-radius; dy<=radius; dy++) {
+            for (let dx=-radius; dx<=radius; dx++) {
+              const dist=Math.sqrt(dx*dx+dy*dy);
+              if (dist>radius) continue;
+              const px=Math.min(width-1,Math.max(0,x+dx));
+              const py=Math.min(height-1,Math.max(0,y+dy));
+              const idx=(py*width+px)*4;
+              const w=1-dist/radius;
+              r+=temp[idx]*w; g+=temp[idx+1]*w; b+=temp[idx+2]*w; a+=temp[idx+3]*w;
+              count+=w;
+            }
+          }
+          if (count>0) {
+            const idx=(y*width+x)*4;
+            data[idx]=Math.min(255, r/count+18);
+            data[idx+1]=Math.min(255, g/count+8);
+            data[idx+2]=Math.min(255, b/count+28);
+            data[idx+3]=a/count;
+          }
+        }
+      }
+      break;
+    }
+    case 'motion': {
+      const { data, width, height } = region;
+      const radius=Math.max(1, Math.floor(strength/8));
+      const temp=new Uint8ClampedArray(data);
+      for (let y=0; y<height; y++) {
+        for (let x=0; x<width; x++) {
+          let r=0,g=0,b=0,a=0,count=0;
+          for (let dx=-radius; dx<=radius; dx++) {
+            const px=Math.min(width-1,Math.max(0,x+dx));
+            const idx=(y*width+px)*4;
+            r+=temp[idx]; g+=temp[idx+1]; b+=temp[idx+2]; a+=temp[idx+3];
+            count++;
+          }
+          const idx=(y*width+x)*4;
+          data[idx]=r/count; data[idx+1]=g/count; data[idx+2]=b/count; data[idx+3]=a/count;
+        }
+      }
+      break;
+    }
+    case 'glow': {
+      const { data, width, height } = region;
+      const radius=Math.max(2, Math.floor(strength/10));
+      const temp=new Uint8ClampedArray(data);
+      for (let y=0; y<height; y++) {
+        for (let x=0; x<width; x++) {
+          let r=0,g=0,b=0,a=0,count=0;
+          for (let dy=-radius; dy<=radius; dy++) {
+            for (let dx=-radius; dx<=radius; dx++) {
+              const dist=Math.sqrt(dx*dx+dy*dy);
+              if (dist>radius) continue;
+              const px=Math.min(width-1,Math.max(0,x+dx));
+              const py=Math.min(height-1,Math.max(0,y+dy));
+              const idx=(py*width+px)*4;
+              const w=1-dist/radius;
+              r+=temp[idx]*w; g+=temp[idx+1]*w; b+=temp[idx+2]*w; a+=temp[idx+3]*w;
+              count+=w;
+            }
+          }
+          if (count>0) {
+            const idx=(y*width+x)*4;
+            const br=strength/100;
+            data[idx]=Math.min(255, r/count+28*br);
+            data[idx+1]=Math.min(255, g/count+18*br);
+            data[idx+2]=Math.min(255, b/count+38*br);
+            data[idx+3]=a/count;
+          }
+        }
+      }
+      break;
+    }
+    case 'paint_smudge': {
+      const { data, width, height } = region;
+      const str=strength/100;
+      const temp=new Uint8ClampedArray(data);
+      const radius=Math.max(1, Math.floor(str*4));
+      for (let y=0; y<height; y++) {
+        for (let x=0; x<width; x++) {
+          const dx=Math.floor((Math.random()-0.5)*radius*2);
+          const dy=Math.floor((Math.random()-0.5)*radius*2);
+          const px=Math.min(width-1,Math.max(0,x+dx));
+          const py=Math.min(height-1,Math.max(0,y+dy));
+          const idx=(y*width+x)*4;
+          const sidx=(py*width+px)*4;
+          const mix=0.25+str*0.55;
+          data[idx]=temp[idx]*(1-mix)+temp[sidx]*mix;
+          data[idx+1]=temp[idx+1]*(1-mix)+temp[sidx+1]*mix;
+          data[idx+2]=temp[idx+2]*(1-mix)+temp[sidx+2]*mix;
+        }
+      }
+      break;
+    }
+    default: applyGaussianRegion(region, Math.max(1, Math.floor(strength/12)));
+  }
+}
+
+// ========================================================================
+//  BRUSH PAINT
+// ========================================================================
+function paintBrushEffect(canvas, x, y, radius, type, strength, density) {
+  if (!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width, h=canvas.height;
+  const x0=Math.max(0,Math.floor(x-radius));
+  const y0=Math.max(0,Math.floor(y-radius));
+  const x1=Math.min(w,Math.ceil(x+radius));
+  const y1=Math.min(h,Math.ceil(y+radius));
+  if (x1<=x0 || y1<=y0) return;
+
+  const imageData=ctx.getImageData(0,0,w,h);
+  const region=getRegion(imageData,w,h,x0,y0,x1,y1);
+  if (!region) return;
+  applyEffectToRegion(region, type, strength, density);
+  putRegion(imageData,w,h,region,x0,y0);
+  ctx.putImageData(imageData,0,0);
+}
+
+// ========================================================================
 //  MAIN APP
-// ============================================================
+// ========================================================================
 const App = () => {
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
@@ -763,183 +819,217 @@ const App = () => {
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [lastPos, setLastPos] = useState({ x:0, y:0 });
+  const [lastPos, setLastPos] = useState({x:0,y:0});
+  const [drawMode, setDrawMode] = useState(false);
+  const [touchActive, setTouchActive] = useState(false);
 
-  const canvasRef = useRef(null);
-  const fileInputRef = useRef(null);
-  const cameraInputRef = useRef(null);
-  const dropRef = useRef(null);
-  const originalImageRef = useRef(null);
+  const canvasRef=useRef(null);
+  const fileInputRef=useRef(null);
+  const cameraInputRef=useRef(null);
+  const dropRef=useRef(null);
+  const originalImageRef=useRef(null);
 
   const blurTypes = [
-    { id:'water_ripple', label:'🌊 Rain Drops', icon:'fa-water' },
-    { id:'crystal', label:'💎 Crystal', icon:'fa-gem' },
-    { id:'wood_scratch', label:'🪵 Wood Grain', icon:'fa-tree' },
-    { id:'broken_mirror', label:'🪞 Broken Mirror', icon:'fa-wine-glass-empty' },
-    { id:'gaussian', label:'✨ Gaussian', icon:'fa-circle' },
-    { id:'mosaic', label:'🎯 Mosaic', icon:'fa-grid-2' },
-    { id:'bokeh', label:'🌸 Bokeh', icon:'fa-circle-dot' },
-    { id:'motion', label:'💨 Motion', icon:'fa-arrows-up-down' },
-    { id:'glow', label:'🌟 Glow', icon:'fa-wand-magic-sparkles' },
-    { id:'paint_smudge', label:'🎨 Smudge', icon:'fa-paintbrush' },
-    { id:'fog', label:'🌫️ Fog', icon:'fa-cloud' },
-    { id:'smoke', label:'🌪️ Smoke', icon:'fa-smog' },
+    {id:'water_ripple', label:'🌊 Rain Drops', icon:'fa-water'},
+    {id:'crystal', label:'💎 Crystal', icon:'fa-gem'},
+    {id:'wood_scratch', label:'🪵 Wood Grain', icon:'fa-tree'},
+    {id:'broken_mirror', label:'🪞 Broken Mirror', icon:'fa-wine-glass-empty'},
+    {id:'fog', label:'🌫️ Fog', icon:'fa-cloud'},
+    {id:'smoke', label:'🌪️ Smoke', icon:'fa-smog'},
+    {id:'gaussian', label:'✨ Gaussian', icon:'fa-circle'},
+    {id:'mosaic', label:'🎯 Mosaic', icon:'fa-grid-2'},
+    {id:'bokeh', label:'🌸 Bokeh', icon:'fa-circle-dot'},
+    {id:'motion', label:'💨 Motion', icon:'fa-arrows-up-down'},
+    {id:'glow', label:'🌟 Glow', icon:'fa-wand-magic-sparkles'},
+    {id:'paint_smudge', label:'🎨 Smudge', icon:'fa-paintbrush'},
   ];
 
   // ---- Upload ----
   const handleFileUpload = (file) => {
     if (!file || !file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        originalImageRef.current = img;
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      const img=new Image();
+      img.onload=()=>{
+        originalImageRef.current=img;
         setImage(img);
         setImageUrl(e.target.result);
         setHistory([]);
         setHistoryIndex(-1);
-        setTimeout(() => {
-          const canvas = canvasRef.current;
+        setTimeout(()=>{
+          const canvas=canvasRef.current;
           if (canvas && img) {
-            const ctx = canvas.getContext('2d');
-            // Maintain original resolution (no downscaling)
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0, img.width, img.height);
+            const ctx=canvas.getContext('2d');
+            // Keep original resolution
+            canvas.width=img.width;
+            canvas.height=img.height;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.drawImage(img,0,0,img.width,img.height);
             saveHistory(canvas);
           }
-        }, 50);
+        },50);
       };
-      img.src = e.target.result;
+      img.src=e.target.result;
     };
     reader.readAsDataURL(file);
   };
 
-  const handleDrop = (e) => { e.preventDefault(); e.stopPropagation(); const f=e.dataTransfer.files[0]; if(f) handleFileUpload(f); if(dropRef.current) dropRef.current.classList.remove('dragover'); };
-  const handleDragOver = (e) => { e.preventDefault(); e.stopPropagation(); if(dropRef.current) dropRef.current.classList.add('dragover'); };
-  const handleDragLeave = (e) => { e.preventDefault(); e.stopPropagation(); if(dropRef.current) dropRef.current.classList.remove('dragover'); };
+  const handleDrop=(e)=>{e.preventDefault();e.stopPropagation();const f=e.dataTransfer.files[0];if(f)handleFileUpload(f);if(dropRef.current)dropRef.current.classList.remove('dragover');};
+  const handleDragOver=(e)=>{e.preventDefault();e.stopPropagation();if(dropRef.current)dropRef.current.classList.add('dragover');};
+  const handleDragLeave=(e)=>{e.preventDefault();e.stopPropagation();if(dropRef.current)dropRef.current.classList.remove('dragover');};
 
-  // ---- Mouse ----
-  const getCanvasCoords = (e) => {
-    const canvas = canvasRef.current;
+  // ---- Coordinates ----
+  const getCanvasCoords = (clientX, clientY) => {
+    const canvas=canvasRef.current;
     if (!canvas) return null;
-    const rect = canvas.getBoundingClientRect();
+    const rect=canvas.getBoundingClientRect();
     return {
-      x: (e.clientX - rect.left) * (canvas.width / rect.width),
-      y: (e.clientY - rect.top) * (canvas.height / rect.height)
+      x: (clientX-rect.left)*(canvas.width/rect.width),
+      y: (clientY-rect.top)*(canvas.height/rect.height)
     };
   };
 
-  const handleMouseDown = (e) => {
-    const pos = getCanvasCoords(e);
-    if (!pos) return;
+  // ---- Drawing ----
+  const startDrawing = (x,y) => {
+    if (!drawMode) return;
     setIsDrawing(true);
-    setLastPos(pos);
-    const canvas = canvasRef.current;
-    paintBrushEffect(canvas, pos.x, pos.y, brushSize/2, blurType, blurStrength, waterDensity);
+    setLastPos({x,y});
+    const canvas=canvasRef.current;
+    paintBrushEffect(canvas, x, y, brushSize/2, blurType, blurStrength, waterDensity);
   };
 
-  const handleMouseMove = (e) => {
-    if (!isDrawing) return;
-    const pos = getCanvasCoords(e);
-    if (!pos) return;
-    const steps = 5;
-    const canvas = canvasRef.current;
+  const moveDrawing = (x,y) => {
+    if (!isDrawing || !drawMode) return;
+    const steps=5;
+    const canvas=canvasRef.current;
     for (let i=0; i<=steps; i++) {
       const t=i/steps;
-      const x=lastPos.x+(pos.x-lastPos.x)*t;
-      const y=lastPos.y+(pos.y-lastPos.y)*t;
-      paintBrushEffect(canvas, x, y, brushSize/2, blurType, blurStrength, waterDensity);
+      const cx=lastPos.x+(x-lastPos.x)*t;
+      const cy=lastPos.y+(y-lastPos.y)*t;
+      paintBrushEffect(canvas, cx, cy, brushSize/2, blurType, blurStrength, waterDensity);
     }
-    setLastPos(pos);
+    setLastPos({x,y});
   };
 
-  const handleMouseUp = () => {
+  const endDrawing = () => {
     if (isDrawing) {
       setIsDrawing(false);
-      const canvas = canvasRef.current;
+      const canvas=canvasRef.current;
       if (canvas) saveHistory(canvas);
     }
   };
 
-  const handleMouseLeave = () => {
-    if (isDrawing) {
-      setIsDrawing(false);
-      const canvas = canvasRef.current;
-      if (canvas) saveHistory(canvas);
+  // ---- Mouse events ----
+  const handleMouseDown=(e)=>{
+    const pos=getCanvasCoords(e.clientX,e.clientY);
+    if (!pos) return;
+    startDrawing(pos.x,pos.y);
+  };
+  const handleMouseMove=(e)=>{
+    if (!isDrawing) return;
+    const pos=getCanvasCoords(e.clientX,e.clientY);
+    if (!pos) return;
+    moveDrawing(pos.x,pos.y);
+  };
+  const handleMouseUp=endDrawing;
+  const handleMouseLeave=endDrawing;
+
+  // ---- Touch events (with scroll detection) ----
+  const handleTouchStart=(e)=>{
+    const touch=e.touches[0];
+    if (!touch) return;
+    const pos=getCanvasCoords(touch.clientX,touch.clientY);
+    if (!pos) return;
+    setTouchActive(true);
+    // Only start drawing if drawMode is on
+    if (drawMode) {
+      e.preventDefault();
+      startDrawing(pos.x,pos.y);
+    }
+  };
+
+  const handleTouchMove=(e)=>{
+    const touch=e.touches[0];
+    if (!touch) return;
+    const pos=getCanvasCoords(touch.clientX,touch.clientY);
+    if (!pos) return;
+    if (drawMode && isDrawing) {
+      e.preventDefault();
+      moveDrawing(pos.x,pos.y);
+    }
+  };
+
+  const handleTouchEnd=(e)=>{
+    setTouchActive(false);
+    if (drawMode && isDrawing) {
+      e.preventDefault();
+      endDrawing();
+    }
+  };
+
+  const handleTouchCancel=(e)=>{
+    setTouchActive(false);
+    if (drawMode && isDrawing) {
+      endDrawing();
     }
   };
 
   // ---- History ----
-  const saveHistory = (canvas) => {
+  const saveHistory=(canvas)=>{
     if (!canvas) return;
-    const url = canvas.toDataURL('image/png');
-    const newHistory = history.slice(0, historyIndex+1);
+    const url=canvas.toDataURL('image/png');
+    const newHistory=history.slice(0,historyIndex+1);
     newHistory.push(url);
     setHistory(newHistory);
     setHistoryIndex(newHistory.length-1);
   };
 
-  const undo = () => {
+  const undo=()=>{
     if (historyIndex>0) {
       const newIdx=historyIndex-1;
       setHistoryIndex(newIdx);
       const img=new Image();
-      img.onload=() => {
+      img.onload=()=>{
         const c=canvasRef.current;
-        if(c){
-          const ctx=c.getContext('2d');
-          ctx.clearRect(0,0,c.width,c.height);
-          ctx.drawImage(img,0,0,c.width,c.height);
-        }
+        if(c){const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width,c.height);}
       };
       img.src=history[newIdx];
     }
   };
 
-  const redo = () => {
+  const redo=()=>{
     if (historyIndex<history.length-1) {
       const newIdx=historyIndex+1;
       setHistoryIndex(newIdx);
       const img=new Image();
-      img.onload=() => {
+      img.onload=()=>{
         const c=canvasRef.current;
-        if(c){
-          const ctx=c.getContext('2d');
-          ctx.clearRect(0,0,c.width,c.height);
-          ctx.drawImage(img,0,0,c.width,c.height);
-        }
+        if(c){const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width,c.height);}
       };
       img.src=history[newIdx];
     }
   };
 
-  // ---- Export HD ----
-  const exportImage = (format='png', quality=1) => {
+  // ---- Export ----
+  const exportImage=(format='png', quality=1)=>{
     const canvas=canvasRef.current;
     if(!canvas) return;
     const link=document.createElement('a');
     const ext=format==='jpeg'?'jpg':format;
     link.download=`clearlens-edit.${ext}`;
-    // For PNG, use png format with no compression loss
-    // For JPEG, use quality parameter
-    if (format === 'png') {
-      link.href = canvas.toDataURL('image/png');
-    } else {
-      link.href = canvas.toDataURL('image/jpeg', quality);
-    }
+    if (format==='png') link.href=canvas.toDataURL('image/png');
+    else link.href=canvas.toDataURL('image/jpeg', quality);
     link.click();
   };
 
   // ---- Reset ----
-  const resetImage = () => {
-    if(originalImageRef.current && canvasRef.current) {
+  const resetImage=()=>{
+    if (originalImageRef.current && canvasRef.current) {
       const canvas=canvasRef.current;
       const ctx=canvas.getContext('2d');
-      const img = originalImageRef.current;
-      canvas.width = img.width;
-      canvas.height = img.height;
+      const img=originalImageRef.current;
+      canvas.width=img.width;
+      canvas.height=img.height;
       ctx.clearRect(0,0,canvas.width,canvas.height);
       ctx.drawImage(img,0,0,img.width,img.height);
       setHistory([]);
@@ -947,133 +1037,177 @@ const App = () => {
     }
   };
 
+  // ---- Apply draw mode class ----
+  useEffect(()=>{
+    const wrapper=document.querySelector('.canvas-wrapper');
+    if (wrapper) {
+      if (drawMode) wrapper.classList.add('drawing');
+      else wrapper.classList.remove('drawing');
+    }
+  },[drawMode]);
+
   // ---- Render ----
   return (
     <div className="min-h-screen hero-bg">
-      <header className="fixed top-0 left-0 right-0 z-50 glass-card mx-4 mt-3 px-6 py-3 flex items-center justify-between" style={{background:'rgba(10,10,15,0.85)', backdropFilter:'blur(28px)'}}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-white font-bold text-sm">CL</div>
-          <div><h1 className="text-lg font-bold bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">ClearLens</h1><p className="text-[10px] text-gray-400 tracking-wider">BRUSH STUDIO</p></div>
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 glass-card mx-3 sm:mx-4 mt-2 sm:mt-3 px-4 sm:px-6 py-2 sm:py-3 flex items-center justify-between" style={{background:'rgba(10,10,15,0.88)', backdropFilter:'blur(28px)'}}>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl gradient-primary flex items-center justify-center text-white font-bold text-xs sm:text-sm">CL</div>
+          <div>
+            <h1 className="header-title font-bold bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">ClearLens</h1>
+            <p className="header-sub text-gray-400 tracking-wider">BRUSH STUDIO</p>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-500 hidden sm:inline"><i className="fas fa-bolt text-indigo-400 mr-1"></i> HD</span>
-          <button className="btn-primary text-sm py-2 px-5 hidden md:flex items-center gap-2"><i className="fas fa-crown"></i> Pro</button>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="text-[10px] sm:text-xs text-gray-500 hidden xs:inline"><i className="fas fa-bolt text-indigo-400 mr-1"></i> HD</span>
+          {/* Draw mode toggle */}
+          <button className={`btn-draw ${drawMode?'active':''}`} onClick={()=>setDrawMode(!drawMode)}>
+            <i className={`fas ${drawMode?'fa-pen':'fa-hand'}`}></i>
+            <span className="hidden sm:inline">{drawMode?'Draw ON':'Draw OFF'}</span>
+            <span className="sm:hidden">{drawMode?'✏️':'👆'}</span>
+          </button>
         </div>
       </header>
 
-      <div className="pt-24 px-4 md:px-8 pb-12 max-w-7xl mx-auto">
+      <div className="pt-20 sm:pt-24 px-3 sm:px-4 md:px-8 pb-8 max-w-7xl mx-auto">
         {!image ? (
           <div className="fade-in">
-            <div className="text-center mb-12">
-              <div className="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium tracking-wider mb-4"><i className="fas fa-sparkles mr-2"></i> AI-Powered Photo Studio</div>
-              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight">Paint Creative Effects <br className="sm:hidden" /><span className="gradient-primary bg-clip-text text-transparent">With Your Brush</span></h2>
-              <p className="text-gray-400 max-w-xl mx-auto mt-4 text-sm md:text-base">Upload any photo, select an effect, and paint directly on your image.<br />Export in <span className="text-white font-medium">full HD quality</span>.</p>
+            <div className="text-center mb-8 sm:mb-12">
+              <div className="inline-block px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[10px] sm:text-xs font-medium tracking-wider mb-3"><i className="fas fa-sparkles mr-1"></i> AI-Powered Effects</div>
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">Paint Realistic <br className="sm:hidden" /><span className="gradient-primary bg-clip-text text-transparent">Brush Effects</span></h2>
+              <p className="text-gray-400 max-w-xl mx-auto mt-2 sm:mt-3 text-sm">Upload a photo, pick an effect, and paint directly on your image. Export in full HD quality.</p>
             </div>
             <div className="max-w-3xl mx-auto">
-              <div className="drop-zone p-8 md:p-12" ref={dropRef} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onClick={()=>fileInputRef.current && fileInputRef.current.click()}>
-                <i className="fas fa-cloud-upload-alt text-5xl text-indigo-400/60 mb-4"></i>
-                <p className="text-lg font-medium text-gray-300">Drop your image here</p>
-                <p className="text-sm text-gray-500 mt-1">or click to browse</p>
-                <div className="flex flex-wrap gap-3 mt-4 justify-center text-xs text-gray-500">
-                  <span className="px-3 py-1 rounded-full bg-white/5 border border-white/5">JPG</span>
-                  <span className="px-3 py-1 rounded-full bg-white/5 border border-white/5">PNG</span>
-                  <span className="px-3 py-1 rounded-full bg-white/5 border border-white/5">WEBP</span>
-                  <span className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-indigo-400">Full Resolution</span>
+              <div className="drop-zone p-6 sm:p-8 md:p-12" ref={dropRef} onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onClick={()=>fileInputRef.current && fileInputRef.current.click()}>
+                <i className="fas fa-cloud-upload-alt text-3xl sm:text-5xl text-indigo-400/60 mb-3"></i>
+                <p className="text-base sm:text-lg font-medium text-gray-300">Drop your image here</p>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">or click to browse</p>
+                <div className="flex flex-wrap gap-2 mt-3 justify-center text-[10px] sm:text-xs text-gray-500">
+                  <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/5 border border-white/5">JPG</span>
+                  <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/5 border border-white/5">PNG</span>
+                  <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/5 border border-white/5">WEBP</span>
+                  <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/5 border border-white/5 text-indigo-400">Full Res</span>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-                <div className="upload-option" onClick={()=>fileInputRef.current && fileInputRef.current.click()}>
-                  <i className="fas fa-images text-2xl text-indigo-400"></i>
-                  <p className="text-sm mt-2 font-medium text-gray-300">Gallery</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4 sm:mt-6">
+                <div className="upload-option py-3 sm:py-4" onClick={()=>fileInputRef.current && fileInputRef.current.click()}>
+                  <i className="fas fa-images text-xl sm:text-2xl text-indigo-400"></i>
+                  <p className="text-xs sm:text-sm mt-1 font-medium text-gray-300">Gallery</p>
                 </div>
-                <div className="upload-option" onClick={()=>cameraInputRef.current && cameraInputRef.current.click()}>
-                  <i className="fas fa-camera text-2xl text-pink-400"></i>
-                  <p className="text-sm mt-2 font-medium text-gray-300">Camera</p>
+                <div className="upload-option py-3 sm:py-4" onClick={()=>cameraInputRef.current && cameraInputRef.current.click()}>
+                  <i className="fas fa-camera text-xl sm:text-2xl text-pink-400"></i>
+                  <p className="text-xs sm:text-sm mt-1 font-medium text-gray-300">Camera</p>
                 </div>
-                <div className="upload-option" onClick={()=>fileInputRef.current && fileInputRef.current.click()}>
-                  <i className="fas fa-folder-open text-2xl text-emerald-400"></i>
-                  <p className="text-sm mt-2 font-medium text-gray-300">Browse</p>
+                <div className="upload-option py-3 sm:py-4" onClick={()=>fileInputRef.current && fileInputRef.current.click()}>
+                  <i className="fas fa-folder-open text-xl sm:text-2xl text-emerald-400"></i>
+                  <p className="text-xs sm:text-sm mt-1 font-medium text-gray-300">Browse</p>
                 </div>
               </div>
-              <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={(e)=>{ if(e.target.files[0]) handleFileUpload(e.target.files[0]); e.target.value=''; }} />
-              <input type="file" ref={cameraInputRef} accept="image/*" capture="environment" className="hidden" onChange={(e)=>{ if(e.target.files[0]) handleFileUpload(e.target.files[0]); e.target.value=''; }} />
+              <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={(e)=>{if(e.target.files[0])handleFileUpload(e.target.files[0]);e.target.value='';}} />
+              <input type="file" ref={cameraInputRef} accept="image/*" capture="environment" className="hidden" onChange={(e)=>{if(e.target.files[0])handleFileUpload(e.target.files[0]);e.target.value='';}} />
             </div>
           </div>
         ) : (
           <div className="fade-in">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-5 glass-card px-4 py-3">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mr-2"><i className="fas fa-paint-brush mr-1 text-indigo-400"></i> Brush Studio</span>
-                <span className="text-xs text-gray-500 bg-white/5 px-3 py-1 rounded-full">Full Resolution: {image?.width}×{image?.height}</span>
+            {/* Toolbar */}
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-3 glass-card px-3 sm:px-4 py-2 sm:py-3">
+              <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                <span className="text-[10px] sm:text-xs text-gray-500 bg-white/5 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full hidden xs:inline">{image?.width}×{image?.height}</span>
+                <span className={`text-[10px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full ${drawMode?'bg-indigo-500/20 text-indigo-300':'bg-white/5 text-gray-500'}`}>
+                  {drawMode ? '✏️ Drawing' : '👆 Scroll'}
+                </span>
               </div>
-              <div className="flex items-center gap-2">
-                <button className="tool-icon" onClick={undo} title="Undo"><i className="fas fa-undo"></i></button>
-                <button className="tool-icon" onClick={redo} title="Redo"><i className="fas fa-redo"></i></button>
-                <button className="tool-icon" onClick={resetImage} title="Reset"><i className="fas fa-rotate-left"></i></button>
-                <button className="tool-icon" onClick={()=>setShowCompare(!showCompare)} title="Before / After"><i className="fas fa-not-equal"></i></button>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <button className="tool-icon w-8 h-8 sm:w-9 sm:h-9 text-xs sm:text-sm" onClick={undo} title="Undo"><i className="fas fa-undo"></i></button>
+                <button className="tool-icon w-8 h-8 sm:w-9 sm:h-9 text-xs sm:text-sm" onClick={redo} title="Redo"><i className="fas fa-redo"></i></button>
+                <button className="tool-icon w-8 h-8 sm:w-9 sm:h-9 text-xs sm:text-sm" onClick={resetImage} title="Reset"><i className="fas fa-rotate-left"></i></button>
+                <button className="tool-icon w-8 h-8 sm:w-9 sm:h-9 text-xs sm:text-sm" onClick={()=>setShowCompare(!showCompare)} title="Before / After"><i className="fas fa-not-equal"></i></button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-5">
-              <div className="space-y-4">
-                <div className="canvas-wrapper">
-                  <canvas ref={canvasRef} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseLeave} className="w-full h-auto" style={{ maxHeight: '75vh' }} />
-                  {isProcessing && <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-2xl backdrop-blur-sm"><div className="text-center"><i className="fas fa-spinner fa-spin text-4xl text-indigo-400 mb-3"></i><p className="text-gray-300 font-medium">Processing...</p></div></div>}
+            {/* Main Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 sm:gap-5">
+              <div className="space-y-3">
+                <div className={`canvas-wrapper ${drawMode?'drawing':''}`}>
+                  <canvas
+                    ref={canvasRef}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseLeave}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    onTouchCancel={handleTouchCancel}
+                    className="w-full h-auto"
+                    style={{ maxHeight: '70vh' }}
+                  />
+                  {isProcessing && <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-2xl backdrop-blur-sm"><div className="text-center"><i className="fas fa-spinner fa-spin text-3xl sm:text-4xl text-indigo-400 mb-2"></i><p className="text-gray-300 font-medium text-sm">Processing...</p></div></div>}
+                  {!drawMode && (
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-[10px] sm:text-xs text-gray-300 border border-white/10 flex items-center gap-2 pointer-events-none">
+                      <i className="fas fa-hand-pointer text-indigo-400"></i>
+                      <span>Tap <span className="text-indigo-400 font-medium">Draw</span> to paint</span>
+                    </div>
+                  )}
                 </div>
                 {showCompare && imageUrl && (
-                  <div className="glass-card px-4 py-3 flex items-center gap-4">
-                    <span className="text-xs text-gray-400">Original</span>
+                  <div className="glass-card px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-3 sm:gap-4">
+                    <span className="text-[10px] sm:text-xs text-gray-400">Original</span>
                     <input type="range" min="0" max="100" value={comparePos} onChange={(e)=>setComparePos(Number(e.target.value))} className="flex-1 slider-thumb h-1.5 bg-gray-700 rounded-full appearance-none cursor-pointer" />
-                    <span className="text-xs text-gray-400">Edited</span>
+                    <span className="text-[10px] sm:text-xs text-gray-400">Edited</span>
                   </div>
                 )}
-                <div className="text-xs text-gray-400 text-center bg-white/5 rounded-xl py-2">
-                  <i className="fas fa-mouse-pointer mr-1 text-indigo-400"></i> Click & drag on image to paint the selected effect
-                </div>
               </div>
 
-              <div className="space-y-4 sidebar">
-                <div className="glass-card p-4 space-y-4">
+              {/* Sidebar */}
+              <div className="space-y-3 sidebar">
+                <div className="glass-card p-3 sm:p-4 space-y-3 sm:space-y-4">
                   <div>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"><i className="fas fa-palette mr-2"></i> Effects</p>
+                    <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"><i className="fas fa-palette mr-1 sm:mr-2"></i> Effects</p>
                     <div className="flex flex-wrap gap-1.5">
                       {blurTypes.map(b => (
-                        <div key={b.id} className={`blur-type-chip text-xs px-3 py-1.5 ${blurType===b.id?'active':''}`} onClick={()=>setBlurType(b.id)}>
+                        <div key={b.id} className={`blur-type-chip text-[10px] sm:text-xs px-2 sm:px-3 py-1 ${blurType===b.id?'active':''}`} onClick={()=>setBlurType(b.id)}>
                           {b.label}
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div className="space-y-2.5">
+                  <div className="space-y-2 sm:space-y-2.5">
                     <div>
-                      <div className="flex items-center justify-between text-sm text-gray-300"><span><i className="fas fa-expand mr-2"></i> Brush Size</span><span className="text-indigo-400 font-medium">{brushSize}px</span></div>
-                      <input type="range" min="8" max="120" value={brushSize} onChange={(e)=>setBrushSize(Number(e.target.value))} className="w-full slider-thumb h-1.5 bg-gray-700 rounded-full appearance-none cursor-pointer mt-1" />
+                      <div className="flex items-center justify-between text-xs sm:text-sm text-gray-300"><span><i className="fas fa-expand mr-1 sm:mr-2"></i> Brush</span><span className="text-indigo-400 font-medium">{brushSize}px</span></div>
+                      <input type="range" min="8" max="120" value={brushSize} onChange={(e)=>setBrushSize(Number(e.target.value))} className="w-full slider-thumb h-1.5 bg-gray-700 rounded-full appearance-none cursor-pointer mt-0.5" />
                     </div>
                     <div>
-                      <div className="flex items-center justify-between text-sm text-gray-300"><span><i className="fas fa-circle-dot mr-2"></i> Intensity</span><span className="text-indigo-400 font-medium">{blurStrength}%</span></div>
-                      <input type="range" min="10" max="100" value={blurStrength} onChange={(e)=>setBlurStrength(Number(e.target.value))} className="w-full slider-thumb h-1.5 bg-gray-700 rounded-full appearance-none cursor-pointer mt-1" />
+                      <div className="flex items-center justify-between text-xs sm:text-sm text-gray-300"><span><i className="fas fa-circle-dot mr-1 sm:mr-2"></i> Intensity</span><span className="text-indigo-400 font-medium">{blurStrength}%</span></div>
+                      <input type="range" min="10" max="100" value={blurStrength} onChange={(e)=>setBlurStrength(Number(e.target.value))} className="w-full slider-thumb h-1.5 bg-gray-700 rounded-full appearance-none cursor-pointer mt-0.5" />
                     </div>
                     <div>
-                      <div className="flex items-center justify-between text-sm text-gray-300"><span><i className="fas fa-droplet mr-2"></i> Detail</span><span className="text-indigo-400 font-medium">{waterDensity}%</span></div>
-                      <input type="range" min="10" max="90" value={waterDensity} onChange={(e)=>setWaterDensity(Number(e.target.value))} className="w-full slider-thumb h-1.5 bg-gray-700 rounded-full appearance-none cursor-pointer mt-1" />
+                      <div className="flex items-center justify-between text-xs sm:text-sm text-gray-300"><span><i className="fas fa-droplet mr-1 sm:mr-2"></i> Detail</span><span className="text-indigo-400 font-medium">{waterDensity}%</span></div>
+                      <input type="range" min="10" max="90" value={waterDensity} onChange={(e)=>setWaterDensity(Number(e.target.value))} className="w-full slider-thumb h-1.5 bg-gray-700 rounded-full appearance-none cursor-pointer mt-0.5" />
                     </div>
                   </div>
 
-                  <div className="text-xs text-gray-400 bg-white/5 rounded-xl p-2 text-center border border-white/5">
+                  <div className="text-[10px] sm:text-xs text-gray-400 bg-white/5 rounded-xl p-1.5 sm:p-2 text-center border border-white/5">
                     <i className="fas fa-info-circle mr-1 text-indigo-400"></i>
                     <span className="text-white font-medium">{blurTypes.find(b=>b.id===blurType)?.label || blurType}</span>
                   </div>
+
+                  {/* Mobile draw toggle inside sidebar */}
+                  <button className={`btn-draw w-full justify-center text-sm ${drawMode?'active':''}`} onClick={()=>setDrawMode(!drawMode)}>
+                    <i className={`fas ${drawMode?'fa-pen':'fa-hand'}`}></i>
+                    {drawMode ? '🟢 Drawing Mode ON' : '⚪ Tap to Enable Drawing'}
+                  </button>
                 </div>
 
-                <div className="glass-card p-4">
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"><i className="fas fa-download mr-2"></i> Export HD</p>
-                  <div className="flex flex-wrap gap-2">
-                    <button className="btn-primary text-sm py-2 px-3 flex-1" onClick={()=>exportImage('png',1)}><i className="fas fa-download mr-1.5"></i> PNG</button>
-                    <button className="btn-secondary text-sm py-2 px-3 flex-1" onClick={()=>exportImage('jpeg',0.95)}><i className="fas fa-file-image mr-1.5"></i> JPG</button>
-                    <button className="btn-secondary text-sm py-2 px-3" onClick={()=>exportImage('png',1)}><i className="fas fa-arrow-up mr-1.5"></i> 4K</button>
+                <div className="glass-card p-3 sm:p-4">
+                  <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"><i className="fas fa-download mr-1 sm:mr-2"></i> Export HD</p>
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    <button className="btn-primary text-[11px] sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3 flex-1" onClick={()=>exportImage('png',1)}><i className="fas fa-download mr-1"></i> PNG</button>
+                    <button className="btn-secondary text-[11px] sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3 flex-1" onClick={()=>exportImage('jpeg',0.95)}><i className="fas fa-file-image mr-1"></i> JPG</button>
+                    <button className="btn-secondary text-[11px] sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3" onClick={()=>exportImage('png',1)}><i className="fas fa-arrow-up mr-1"></i> 4K</button>
                   </div>
-                  <p className="text-[10px] text-gray-500 mt-2 text-center">Exports at original resolution without quality loss</p>
+                  <p className="text-[9px] sm:text-[10px] text-gray-500 mt-1.5 text-center">Exports at original resolution • No quality loss</p>
                 </div>
               </div>
             </div>
@@ -1081,9 +1215,9 @@ const App = () => {
         )}
       </div>
 
-      <footer className="border-t border-white/5 mt-8 pt-6 pb-4 text-center text-xs text-gray-500">
-        <p><span className="text-indigo-400">ClearLens AI Studio</span> — Paint Creative Effects in Full HD. © 2026</p>
-        <p className="mt-1 flex items-center justify-center gap-4">
+      <footer className="border-t border-white/5 mt-4 pt-4 pb-3 text-center text-[9px] sm:text-xs text-gray-500 px-3">
+        <p><span className="text-indigo-400">ClearLens AI Studio</span> — Paint Realistic Effects in Full HD. © 2026</p>
+        <p className="mt-1 flex items-center justify-center gap-2 sm:gap-4 flex-wrap">
           <span><i className="fas fa-shield-alt mr-1"></i> Privacy First</span>
           <span><i className="fas fa-bolt mr-1"></i> AI-Powered</span>
           <span><i className="fas fa-globe mr-1"></i> 100% Browser</span>
