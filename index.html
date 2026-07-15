@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,28 +23,26 @@
     .btn-draw { background:rgba(108,92,231,0.2); border:2px solid #6c5ce7; color:#fff; padding:8px 18px; border-radius:14px; font-weight:600; font-size:13px; cursor:pointer; transition:all 0.3s ease; display:flex; align-items:center; gap:8px; }
     .btn-draw.active { background:#6c5ce7; box-shadow:0 0 30px rgba(108,92,231,0.4); }
     .btn-draw:active { transform:scale(0.95); }
-    .drop-zone { border:2px dashed rgba(108,92,231,0.4); border-radius:24px; background:rgba(108,92,231,0.04); transition:all 0.4s ease; min-height:250px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; }
+    .drop-zone { border:2px dashed rgba(108,92,231,0.4); border-radius:24px; background:rgba(108,92,231,0.04); transition:all 0.4s ease; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; }
     .drop-zone:hover, .drop-zone.dragover { border-color:#6c5ce7; background:rgba(108,92,231,0.1); transform:scale(1.01); }
     .blur-type-chip { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:6px 14px; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.25s ease; color:#b0b0c0; white-space:nowrap; display:inline-flex; align-items:center; gap:4px; }
     .blur-type-chip:hover { background:rgba(108,92,231,0.15); border-color:rgba(108,92,231,0.3); color:#fff; }
     .blur-type-chip.active { background:rgba(108,92,231,0.25); border-color:#6c5ce7; color:#fff; box-shadow:0 0 20px rgba(108,92,231,0.15); }
     .slider-thumb::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg,#6c5ce7,#a29bfe); cursor:pointer; box-shadow:0 2px 12px rgba(108,92,231,0.5); }
     .slider-thumb::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg,#6c5ce7,#a29bfe); cursor:pointer; border:none; }
-    .canvas-wrapper { background:#0e0e16; border-radius:20px; border:1px solid rgba(255,255,255,0.06); overflow:hidden; position:relative; touch-action:auto; width:100%; height:100%; min-height:400px; }
+    .canvas-wrapper { background:#0e0e16; border-radius:20px; border:1px solid rgba(255,255,255,0.06); overflow:hidden; position:relative; touch-action:auto; width:100%; height:100%; min-height:350px; }
     .canvas-wrapper.drawing canvas { touch-action:none; cursor:crosshair; }
     .canvas-wrapper.drawing { cursor:crosshair; }
-    .canvas-container { width:100%; height:100%; min-height:400px; overflow:hidden; position:relative; touch-action:none; }
-    .canvas-container canvas { display:block; touch-action:none; }
+    .canvas-container { width:100%; height:100%; min-height:350px; overflow:hidden; position:relative; touch-action:none; }
+    .canvas-container canvas { position:absolute; top:0; left:0; transform-origin:0 0; display:block; touch-action:none; }
     .canvas-container.panning { cursor:grab; }
     .canvas-container.panning:active { cursor:grabbing; }
     .tool-icon { width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); cursor:pointer; transition:all 0.25s ease; color:#a0a0b8; font-size:15px; }
     .tool-icon:hover { background:rgba(108,92,231,0.15); border-color:rgba(108,92,231,0.3); color:#fff; }
-    .upload-option { padding:16px; border-radius:16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); cursor:pointer; transition:all 0.3s ease; text-align:center; }
-    .upload-option:hover { background:rgba(108,92,231,0.08); border-color:rgba(108,92,231,0.2); transform:translateY(-2px); }
     .fade-in { animation:fadeIn 0.5s ease forwards; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
     .hero-bg { background:radial-gradient(ellipse at 20% 50%, rgba(108,92,231,0.12) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(253,121,168,0.08) 0%, transparent 60%), #0a0a0f; }
-    .sidebar { max-height: calc(100vh - 180px); overflow-y:auto; }
+    .sidebar { max-height: calc(100vh - 200px); overflow-y:auto; }
     .sidebar::-webkit-scrollbar { width:4px; }
     .sidebar::-webkit-scrollbar-track { background:transparent; }
     .sidebar::-webkit-scrollbar-thumb { background:#6c5ce7; border-radius:10px; }
@@ -53,7 +50,7 @@
     .header-sub { font-size:clamp(0.5rem, 1.2vw, 0.65rem); }
     .app-container { height:100vh; display:flex; flex-direction:column; overflow:hidden; }
     .main-content { flex:1; overflow:hidden; }
-    .editor-grid { display:grid; grid-template-columns:1fr 280px; gap:16px; height:100%; }
+    .editor-grid { display:grid; grid-template-columns:1fr 260px; gap:16px; height:100%; }
     .canvas-area { display:flex; flex-direction:column; height:100%; min-height:0; }
     .canvas-container { flex:1; min-height:0; }
     .zoom-controls { position:absolute; bottom:16px; right:16px; display:flex; gap:8px; z-index:10; }
@@ -62,15 +59,13 @@
     .zoom-level { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); padding:4px 12px; border-radius:20px; font-size:12px; color:#aaa; border:1px solid rgba(255,255,255,0.05); pointer-events:none; z-index:10; }
     @media (max-width:768px) {
       .editor-grid { grid-template-columns:1fr; grid-template-rows:1fr auto; }
-      .sidebar { max-height:260px; overflow-y:auto; }
+      .sidebar { max-height:220px; overflow-y:auto; }
       .blur-type-chip { font-size:11px; padding:4px 10px; }
       .btn-draw { font-size:12px; padding:6px 14px; }
-      .canvas-wrapper { min-height:300px; }
-      .canvas-container { min-height:300px; }
+      .canvas-container { min-height:250px; }
     }
     @media (max-width:480px) {
-      .canvas-wrapper { min-height:250px; }
-      .canvas-container { min-height:250px; }
+      .canvas-container { min-height:200px; }
       .zoom-controls { bottom:10px; right:10px; }
       .zoom-btn { width:30px; height:30px; font-size:14px; }
     }
@@ -152,7 +147,7 @@ function applyGaussianRegion(region, radius) {
 }
 
 // ========================================================================
-//  REAL WOOD
+//  EFFECT: WOOD
 // ========================================================================
 function applyWoodRegion(region, strength, density) {
   const { data, width, height } = region;
@@ -224,7 +219,7 @@ function applyWoodRegion(region, strength, density) {
 }
 
 // ========================================================================
-//  RAIN DROPS
+//  EFFECT: RAIN DROPS
 // ========================================================================
 function applyRainDropsRegion(region, strength, density) {
   const { data, width, height } = region;
@@ -320,7 +315,7 @@ function applyRainDropsRegion(region, strength, density) {
 }
 
 // ========================================================================
-//  CRYSTAL
+//  EFFECT: CRYSTAL
 // ========================================================================
 function applyCrystalRegion(region, strength, density) {
   const { data, width, height } = region;
@@ -392,7 +387,7 @@ function applyCrystalRegion(region, strength, density) {
 }
 
 // ========================================================================
-//  BROKEN MIRROR
+//  EFFECT: BROKEN MIRROR
 // ========================================================================
 function applyBrokenMirrorRegion(region, strength, density) {
   const { data, width, height } = region;
@@ -505,7 +500,7 @@ function applyBrokenMirrorRegion(region, strength, density) {
 }
 
 // ========================================================================
-//  FOG
+//  EFFECT: FOG
 // ========================================================================
 function applyFogRegion(region, strength, density) {
   const { data, width, height } = region;
@@ -547,7 +542,7 @@ function applyFogRegion(region, strength, density) {
 }
 
 // ========================================================================
-//  SMOKE
+//  EFFECT: SMOKE
 // ========================================================================
 function applySmokeRegion(region, strength, density) {
   const { data, width, height } = region;
@@ -795,7 +790,7 @@ const App = () => {
   const [lastPos, setLastPos] = useState({x:0,y:0});
   const [drawMode, setDrawMode] = useState(false);
 
-  // Pan & Zoom states
+  // Pan & Zoom state (in CSS pixel space)
   const [panX, setPanX] = useState(0);
   const [panY, setPanY] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -836,15 +831,28 @@ const App = () => {
         setImageUrl(e.target.result);
         setHistory([]);
         setHistoryIndex(-1);
-        setPanX(0); setPanY(0); setZoom(1);
+        // Reset pan/zoom after image loads
         setTimeout(()=>{
+          const container=containerRef.current;
           const canvas=canvasRef.current;
-          if (canvas && img) {
-            const ctx=canvas.getContext('2d');
+          if (canvas && img && container) {
+            const rect=container.getBoundingClientRect();
+            const fitScale=Math.min(rect.width/img.width, rect.height/img.height);
+            const initZoom=Math.min(1, fitScale);
+            const initPanX=(rect.width - img.width*initZoom)/2;
+            const initPanY=(rect.height - img.height*initZoom)/2;
+            setZoom(initZoom);
+            setPanX(initPanX);
+            setPanY(initPanY);
+            // Draw image on canvas
             canvas.width=img.width;
             canvas.height=img.height;
+            const ctx=canvas.getContext('2d');
             ctx.clearRect(0,0,canvas.width,canvas.height);
             ctx.drawImage(img,0,0,img.width,img.height);
+            // Set canvas CSS size to image size so it won't stretch
+            canvas.style.width=img.width+'px';
+            canvas.style.height=img.height+'px';
             saveHistory(canvas);
           }
         },50);
@@ -858,22 +866,20 @@ const App = () => {
   const handleDragOver=(e)=>{e.preventDefault();e.stopPropagation();if(dropRef.current)dropRef.current.classList.add('dragover');};
   const handleDragLeave=(e)=>{e.preventDefault();e.stopPropagation();if(dropRef.current)dropRef.current.classList.remove('dragover');};
 
-  // ---- Get canvas coords with transform ----
+  // ---- Get canvas coordinates from mouse/touch ----
   const getCanvasCoords = (clientX, clientY) => {
-    const container=containerRef.current;
     const canvas=canvasRef.current;
-    if (!container || !canvas) return null;
-    const rect=container.getBoundingClientRect();
-    // Get position relative to container
-    let x = (clientX - rect.left) * (canvas.width / rect.width);
-    let y = (clientY - rect.top) * (canvas.height / rect.height);
-    // Apply inverse transform (pan and zoom)
-    x = (x / zoom) - panX;
-    y = (y / zoom) - panY;
-    return {x, y};
+    if (!canvas) return null;
+    const rect=canvas.getBoundingClientRect(); // includes transform
+    const mx = clientX - rect.left;
+    const my = clientY - rect.top;
+    // Map to canvas bitmap coordinates
+    const canvasX = (mx / rect.width) * canvas.width;
+    const canvasY = (my / rect.height) * canvas.height;
+    return { x: canvasX, y: canvasY };
   };
 
-  // ---- Drawing ----
+  // ---- Drawing functions ----
   const startDrawing = (x,y) => {
     if (!drawMode) return;
     setIsDrawing(true);
@@ -928,10 +934,10 @@ const App = () => {
       return;
     }
     if (isPanning && !drawMode) {
-      const dx = (e.clientX - panStart.x) / (canvasRef.current?.width / containerRef.current?.getBoundingClientRect().width || 1);
-      const dy = (e.clientY - panStart.y) / (canvasRef.current?.height / containerRef.current?.getBoundingClientRect().height || 1);
-      setPanX(panStartOffset.x + dx / zoom);
-      setPanY(panStartOffset.y + dy / zoom);
+      const dx = e.clientX - panStart.x;
+      const dy = e.clientY - panStart.y;
+      setPanX(panStartOffset.x + dx);
+      setPanY(panStartOffset.y + dy);
       e.preventDefault();
     }
   };
@@ -967,7 +973,6 @@ const App = () => {
       e.preventDefault();
       return;
     }
-    // Pan mode
     if (e.touches.length === 1) {
       setIsPanning(true);
       setPanStart({x:touch.clientX, y:touch.clientY});
@@ -987,19 +992,11 @@ const App = () => {
       return;
     }
     if (isPanning && !drawMode && e.touches.length === 1) {
-      const rect=containerRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const dx = (touch.clientX - panStart.x) / (canvasRef.current?.width / rect.width || 1);
-      const dy = (touch.clientY - panStart.y) / (canvasRef.current?.height / rect.height || 1);
-      setPanX(panStartOffset.x + dx / zoom);
-      setPanY(panStartOffset.y + dy / zoom);
+      const dx = touch.clientX - panStart.x;
+      const dy = touch.clientY - panStart.y;
+      setPanX(panStartOffset.x + dx);
+      setPanY(panStartOffset.y + dy);
       e.preventDefault();
-    }
-    // Pinch zoom
-    if (e.touches.length === 2 && !drawMode) {
-      const t1=e.touches[0], t2=e.touches[1];
-      const dist = Math.sqrt((t1.clientX-t2.clientX)**2 + (t1.clientY-t2.clientY)**2);
-      // We'll handle zoom with a separate gesture
     }
   };
 
@@ -1027,15 +1024,60 @@ const App = () => {
   const handleWheel = (e) => {
     if (drawMode) return;
     e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.08 : 0.08;
-    const newZoom = Math.min(5, Math.max(0.2, zoom + delta));
+    const container=containerRef.current;
+    if (!container) return;
+    const rect=container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    // Compute canvas pixel under mouse before zoom
+    const canvas=canvasRef.current;
+    if (!canvas) return;
+    const canvasRect=canvas.getBoundingClientRect();
+    const cx = (mouseX - panX) / zoom;
+    const cy = (mouseY - panY) / zoom;
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    const newZoom = Math.min(5, Math.max(0.2, zoom * (1 + delta)));
+    // Adjust pan to keep the same canvas pixel under mouse
+    const newPanX = mouseX - cx * newZoom;
+    const newPanY = mouseY - cy * newZoom;
     setZoom(newZoom);
+    setPanX(newPanX);
+    setPanY(newPanY);
   };
 
   // ---- Zoom buttons ----
-  const zoomIn = () => setZoom(Math.min(5, zoom + 0.15));
-  const zoomOut = () => setZoom(Math.max(0.2, zoom - 0.15));
-  const resetView = () => { setPanX(0); setPanY(0); setZoom(1); };
+  const zoomIn = () => {
+    const container=containerRef.current;
+    if (!container) return;
+    const rect=container.getBoundingClientRect();
+    const cx = (rect.width/2 - panX) / zoom;
+    const cy = (rect.height/2 - panY) / zoom;
+    const newZoom = Math.min(5, zoom * 1.15);
+    setZoom(newZoom);
+    setPanX(rect.width/2 - cx * newZoom);
+    setPanY(rect.height/2 - cy * newZoom);
+  };
+  const zoomOut = () => {
+    const container=containerRef.current;
+    if (!container) return;
+    const rect=container.getBoundingClientRect();
+    const cx = (rect.width/2 - panX) / zoom;
+    const cy = (rect.height/2 - panY) / zoom;
+    const newZoom = Math.max(0.2, zoom / 1.15);
+    setZoom(newZoom);
+    setPanX(rect.width/2 - cx * newZoom);
+    setPanY(rect.height/2 - cy * newZoom);
+  };
+  const resetView = () => {
+    const container=containerRef.current;
+    const canvas=canvasRef.current;
+    if (!container || !canvas) return;
+    const rect=container.getBoundingClientRect();
+    const fitScale=Math.min(rect.width/canvas.width, rect.height/canvas.height);
+    setZoom(fitScale);
+    setPanX((rect.width - canvas.width*fitScale)/2);
+    setPanY((rect.height - canvas.height*fitScale)/2);
+  };
 
   // ---- History ----
   const saveHistory=(canvas)=>{
@@ -1097,36 +1139,55 @@ const App = () => {
       ctx.drawImage(img,0,0,img.width,img.height);
       setHistory([]);
       setHistoryIndex(-1);
-      setPanX(0); setPanY(0); setZoom(1);
+      // Reset view
+      const container=containerRef.current;
+      if (container) {
+        const rect=container.getBoundingClientRect();
+        const fitScale=Math.min(rect.width/canvas.width, rect.height/canvas.height);
+        setZoom(fitScale);
+        setPanX((rect.width - canvas.width*fitScale)/2);
+        setPanY((rect.height - canvas.height*fitScale)/2);
+      }
     }
   };
 
-  // ---- Render canvas with transform ----
-  useEffect(()=>{
-    const canvas=canvasRef.current;
-    if (!canvas) return;
-    if (drawMode) {
-      canvas.style.transform = 'none';
-      canvas.style.transformOrigin = '0 0';
-    } else {
-      canvas.style.transform = `translate(${panX * canvas.width}px, ${panY * canvas.height}px) scale(${zoom})`;
-      canvas.style.transformOrigin = '0 0';
+  // ---- Apply CSS transform to canvas ----
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
     }
-  }, [panX, panY, zoom, drawMode]);
+  }, [panX, panY, zoom]);
 
-  // ---- Apply draw mode class ----
+  // ---- Toggle draw mode class ----
   useEffect(()=>{
     const wrapper=document.querySelector('.canvas-wrapper');
     if (wrapper) {
       if (drawMode) wrapper.classList.add('drawing');
       else wrapper.classList.remove('drawing');
     }
-    // Reset pan/zoom when draw mode changes
-    if (drawMode) {
-      // When drawing, we want the image to be at natural position
-      // But we keep the current transform
-    }
-  },[drawMode]);
+  }, [drawMode]);
+
+  // ---- Recalculate fit on container resize ----
+  useEffect(() => {
+    const handleResize = () => {
+      if (image && containerRef.current && canvasRef.current) {
+        const rect=containerRef.current.getBoundingClientRect();
+        const canvas=canvasRef.current;
+        const fitScale=Math.min(rect.width/canvas.width, rect.height/canvas.height);
+        // Only auto-fit if zoom is at previous fit level? We'll just reset if user hasn't zoomed.
+        // For simplicity, we'll just set a new fit if zoom is 1 (initial). But better to leave user's zoom.
+        // We'll only adjust if the canvas is not zoomed beyond fit.
+        if (zoom <= 1.01) {
+          setZoom(fitScale);
+          setPanX((rect.width - canvas.width*fitScale)/2);
+          setPanY((rect.height - canvas.height*fitScale)/2);
+        }
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [image, zoom]);
 
   // ---- Render ----
   return (
@@ -1209,8 +1270,7 @@ const App = () => {
                       onTouchMove={handleTouchMove}
                       onTouchEnd={handleTouchEnd}
                       onTouchCancel={handleTouchCancel}
-                      className="w-full h-full object-contain"
-                      style={{ transformOrigin: '0 0' }}
+                      style={{ width: image?.width+'px', height: image?.height+'px', transform: `translate(${panX}px, ${panY}px) scale(${zoom})` }}
                     />
                     {isProcessing && (
                       <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-2xl backdrop-blur-sm">
@@ -1303,4 +1363,3 @@ root.render(<App />);
 </script>
 </body>
 </html>
-```
